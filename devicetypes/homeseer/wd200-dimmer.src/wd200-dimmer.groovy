@@ -37,6 +37,8 @@ metadata {
     capability "Switch"
     capability "Switch Level"
 
+    command "tapUp1"
+
     fingerprint mfr: "000C", prod: "4447", model: "3036"
 
     tiles(scale: 2) {
@@ -52,42 +54,42 @@ metadata {
         }
       }
 
-      standardTile("tapUp1", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Tap ▲", action: "tapUp1", icon:, backgroundColor: "#FFFFFF"
+      valueTile("tapUp1", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Tap   ▲  ", action: "tapUp1", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapUp2", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Tap ▲▲", action: "tapUp2", backgroundColor: "#FFFFFF"
+      valueTile("tapUp2", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Tap  ▲▲ ", action: "tapUp2", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapUp3", "device.button", width: 1, height: 1, decoration: "flat") {
+      valueTile("tapUp3", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▲▲▲", action: "tapUp3", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapUp4", "device.button", width: 1, height: 1, decoration: "flat") {
+      valueTile("tapUp4", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▲▲▲▲", action: "tapUp4", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapUp5", "device.button", width: 1, height: 1, decoration: "flat") {
+      valueTile("tapUp5", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▲▲▲▲▲", action: "tapUp5", backgroundColor: "#FFFFFF"
       }
-      standardTile("holdUp", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Hold ▲", action: "holdUp", backgroundColor: "#FFFFFF"
+      valueTile("holdUp", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Hold   ▲  ", action: "holdUp", backgroundColor: "#FFFFFF"
       }
 
-      standardTile("tapDown1", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Tap ▼", action: "tapDown1", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
+      valueTile("tapDown1", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Tap   ▼  ", action: "tapDown1", backgroundColor: "#FFFFFF"
       }
-      standardTile("holdDown", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Hold ▼", action: "holdDown", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
+      valueTile("holdDown", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Hold   ▼  ", action: "holdDown", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapDown2", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Tap ▼▼", action: "tapDown2", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
+      valueTile("tapDown2", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Tap  ▼▼ ", action: "tapDown2", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapDown3", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Tap ▼▼▼", action: "tapDown3", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
+      valueTile("tapDown3", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Tap ▼▼▼", action: "tapDown3", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapDown4", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Tap ▼▼▼▼", action: "tapDown4", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
+      valueTile("tapDown4", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Tap ▼▼▼▼", action: "tapDown4", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapDown5", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Tap ▼▼▼▼▼", action: "tapDown5", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
+      valueTile("tapDown5", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Tap ▼▼▼▼▼", action: "tapDown5", backgroundColor: "#FFFFFF"
       }
 
       standardTile("refresh", "device.switch", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
@@ -129,6 +131,10 @@ def setLevel(Number value) {
     createEvent(name: "level", value: value),
     zwave.basicV1.basicSet(value: level).format()
   ]
+}
+
+def tapUp1() {
+  log.debug "tapUp1()"
 }
 
 def parse(String description) {
