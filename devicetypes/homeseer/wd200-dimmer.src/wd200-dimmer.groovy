@@ -137,10 +137,12 @@ def poll() {
 def setLevel(Number value) {
   log.debug "setLevel(${value})"
 
+  def onoff = value > 0 ? "on" : "off"
+
   [
-    createEvent(name: "switch", value: (value > 0 ? "on" : "off")),
+    createEvent(name: "switch", value: onoff),
     createEvent(name: "level", value: value),
-    zwave.basicV1.basicSet(value: level).format()
+    response(zwave.basicV1.basicSet(value: level).format())
   ]
 }
 
