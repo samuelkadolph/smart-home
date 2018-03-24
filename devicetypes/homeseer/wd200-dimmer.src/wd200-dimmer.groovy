@@ -19,12 +19,12 @@ metadata {
 }
 
 def parse(String description) {
+  log.debug "parse(${description})"
   def cmd = zwave.parse(description)
 
   if (cmd) {
     return zwaveEvent(cmd)
   } else {
-    log.debug "Non parsed event: ${description}"
     return null
   }
 }
