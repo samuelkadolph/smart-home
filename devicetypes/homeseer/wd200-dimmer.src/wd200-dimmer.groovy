@@ -112,7 +112,8 @@ def off() {
 def on() {
   log.debug "on()"
 
-  zwave.basicV1.basicSet(value: 0xFF).format()
+  delayBetween([zwave.basicV1.basicSet(value: 0xFF).format(), zwave.switchMultilevelV1.switchMultilevelGet().format()], 5000)
+  // zwave.basicV1.basicSet(value: 0xFF).format()
 }
 
 def poll() {
@@ -123,15 +124,13 @@ def setLevel(Number value) {
   log.debug "setLevel(${value})"
 
   [
-    createEvent(name: "switch", value: value > 0 ? "on" : "off"),
+    createEvent(name: "switch", value: (value > 0 ? "on" : "off")),
     createEvent(name: "level", value: value),
     zwave.basicV1.basicSet(value: level).format()
   ]
 }
 
-
 def parse(String description) {
-  log.debug "parse(${description})"
   def cmd = zwave.parse(description)
 
   if (cmd) {
@@ -139,4 +138,24 @@ def parse(String description) {
   } else {
     return null
   }
+}
+
+def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd) {
+  log.debug "BasicReport ${cmd}"
+
+  handleReport(cmd)
+}
+
+def zwaveEvent(physicalgraph.zwave.commands.centralscenev1.CentralSceneNotification cmd) {
+  log.debug "CentralSceneNotification ${cmd}"
+}
+
+def zwaveEvent(physicalgraph.zwave.commands.switchmultilevelv1.SwitchMultilevelReport cmd) {
+  log.debug "SwitchMultilevelReport ${cmd}"
+
+  handleReport(cmd)
+}
+
+private handleReport(physicalgraph.zwave.Command cmd) {
+
 }
