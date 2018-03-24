@@ -52,6 +52,12 @@ metadata {
         }
       }
 
+      standardTile("tapUp1", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Tap ▲▲", action: "tapUp1", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
+      }
+      standardTile("tapDown1", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Tap ▼▼", action: "tapDown1", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
+      }
       standardTile("tapUp2", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▲▲", action: "tapUp2", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
@@ -88,7 +94,7 @@ metadata {
       }
 
       main "switch"
-      details "switch", "tapUp2","tapUp3","tapUp4","tapUp5","holdUp","tapDown2","tapDown3","tapDown4","tapDown5","holdDown", "refresh"
+      details "switch", "tapUp1", "tapUp2", "tapUp3", "tapUp4", "tapUp5", "holdUp", "tapDown1", "tapDown2", "tapDown3", "tapDown4", "tapDown5", "holdDown", "refresh"
     }
   }
 }
