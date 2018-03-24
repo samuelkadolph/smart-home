@@ -37,7 +37,18 @@ metadata {
     capability "Switch"
     capability "Switch Level"
 
+    command "holdDown1"
+    command "holdUp1"
+    command "tapDown1"
+    command "tapDown2"
+    command "tapDown3"
+    command "tapDown4"
+    command "tapDown5"
     command "tapUp1"
+    command "tapUp2"
+    command "tapUp3"
+    command "tapUp4"
+    command "tapUp5"
 
     fingerprint mfr: "000C", prod: "4447", model: "3036"
 
@@ -57,6 +68,9 @@ metadata {
       valueTile("tapUp1", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap   ▲  ", action: "tapUp1", backgroundColor: "#FFFFFF"
       }
+      valueTile("holdUp", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Hold   ▲  ", action: "holdUp", backgroundColor: "#FFFFFF"
+      }
       valueTile("tapUp2", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap  ▲▲ ", action: "tapUp2", backgroundColor: "#FFFFFF"
       }
@@ -68,9 +82,6 @@ metadata {
       }
       valueTile("tapUp5", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▲▲▲▲▲", action: "tapUp5", backgroundColor: "#FFFFFF"
-      }
-      valueTile("holdUp", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Hold   ▲  ", action: "holdUp", backgroundColor: "#FFFFFF"
       }
 
       valueTile("tapDown1", "device.button", width: 1, height: 1, decoration: "flat") {
@@ -133,8 +144,52 @@ def setLevel(Number value) {
   ]
 }
 
+def holdDown1() {
+  log.debug "holdDown1()"
+}
+
+def holdUp1() {
+  log.debug "holdUp1()"
+}
+
+def tapDown1() {
+  log.debug "tapDown1()"
+}
+
+def tapDown2() {
+  log.debug "tapDown2()"
+}
+
+def tapDown3() {
+  log.debug "tapDown3()"
+}
+
+def tapDown4() {
+  log.debug "tapDown4()"
+}
+
+def tapDown5() {
+  log.debug "tapDown5()"
+}
+
 def tapUp1() {
   log.debug "tapUp1()"
+}
+
+def tapUp2() {
+  log.debug "tapUp2()"
+}
+
+def tapUp3() {
+  log.debug "tapUp3()"
+}
+
+def tapUp4() {
+  log.debug "tapUp4()"
+}
+
+def tapUp5() {
+  log.debug "tapUp5()"
 }
 
 def parse(String description) {
