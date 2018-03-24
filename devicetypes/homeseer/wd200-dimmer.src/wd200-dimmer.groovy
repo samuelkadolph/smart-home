@@ -53,10 +53,10 @@ metadata {
       }
 
       standardTile("tapUp1", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Tap ▲▲", action: "tapUp1", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
+        state "default", label: "Tap ▲", action: "tapUp1", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
       standardTile("tapDown1", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Tap ▼▼", action: "tapDown1", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
+        state "default", label: "Tap ▼", action: "tapDown1", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
       standardTile("tapUp2", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▲▲", action: "tapUp2", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
@@ -104,11 +104,11 @@ def configure() {
 }
 
 def off() {
-
+  zwave.basicV1.basicSet(value: 0).format()
 }
 
 def on() {
-
+  zwave.basicV1.basicSet(value: 0xFF).format()
 }
 
 def poll() {
@@ -116,10 +116,13 @@ def poll() {
 }
 
 def setLevel(Number value) {
+  [
+    createEvent(name: "switch", value: value > 0 ? "on" : "off"),
+    createEvent(name: "level", value: value),
+    zwave.basicV1.basicSet(value: level).format()
+  ]
 }
 
-def setLevel(Number value, Number rate) {
-}
 
 def parse(String description) {
   log.debug "parse(${description})"
