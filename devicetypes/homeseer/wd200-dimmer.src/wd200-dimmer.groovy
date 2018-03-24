@@ -104,10 +104,14 @@ def configure() {
 }
 
 def off() {
+  log.debug "off()"
+
   zwave.basicV1.basicSet(value: 0).format()
 }
 
 def on() {
+  log.debug "on()"
+
   zwave.basicV1.basicSet(value: 0xFF).format()
 }
 
@@ -116,6 +120,8 @@ def poll() {
 }
 
 def setLevel(Number value) {
+  log.debug "setLevel(${value})"
+
   [
     createEvent(name: "switch", value: value > 0 ? "on" : "off"),
     createEvent(name: "level", value: value),
