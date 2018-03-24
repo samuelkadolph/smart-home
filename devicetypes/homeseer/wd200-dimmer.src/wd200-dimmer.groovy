@@ -53,40 +53,41 @@ metadata {
       }
 
       standardTile("tapUp1", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Tap ▲", action: "tapUp1", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
+        state "default", label: "Tap ▲", action: "tapUp1", icon:, backgroundColor: "#FFFFFF"
       }
+      standardTile("tapUp2", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Tap ▲▲", action: "tapUp2", backgroundColor: "#FFFFFF"
+      }
+      standardTile("tapUp3", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Tap ▲▲▲", action: "tapUp3", backgroundColor: "#FFFFFF"
+      }
+      standardTile("tapUp4", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Tap ▲▲▲▲", action: "tapUp4", backgroundColor: "#FFFFFF"
+      }
+      standardTile("tapUp5", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Tap ▲▲▲▲▲", action: "tapUp5", backgroundColor: "#FFFFFF"
+      }
+      standardTile("holdUp", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Hold ▲", action: "holdUp", backgroundColor: "#FFFFFF"
+      }
+
       standardTile("tapDown1", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▼", action: "tapDown1", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapUp2", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Tap ▲▲", action: "tapUp2", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
+      standardTile("holdDown", "device.button", width: 1, height: 1, decoration: "flat") {
+        state "default", label: "Hold ▼", action: "holdDown", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
       standardTile("tapDown2", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▼▼", action: "tapDown2", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapUp3", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Tap ▲▲▲", action: "tapUp3", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
-      }
       standardTile("tapDown3", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▼▼▼", action: "tapDown3", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
-      }
-      standardTile("tapUp4", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Tap ▲▲▲▲", action: "tapUp4", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
       standardTile("tapDown4", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▼▼▼▼", action: "tapDown4", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapUp5", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Tap ▲▲▲▲▲", action: "tapUp5", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
-      }
       standardTile("tapDown5", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▼▼▼▼▼", action: "tapDown5", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
-      }
-      standardTile("holdUp", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Hold ▲", action: "holdUp", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
-      }
-      standardTile("holdDown", "device.button", width: 1, height: 1, decoration: "flat") {
-        state "default", label: "Hold ▼", action: "holdDown", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
 
       standardTile("refresh", "device.switch", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
@@ -94,7 +95,7 @@ metadata {
       }
 
       main "switch"
-      details "switch", "tapUp1", "tapUp2", "tapUp3", "tapUp4", "tapUp5", "holdUp", "tapDown1", "tapDown2", "tapDown3", "tapDown4", "tapDown5", "holdDown", "refresh"
+      details "switch", "tapUp1", "holdUp", "tapUp2", "tapUp3", "tapUp4", "tapUp5", "tapDown1", "holdDown", "tapDown2", "tapDown3", "tapDown4", "tapDown5", "refresh"
     }
   }
 }
@@ -141,17 +142,17 @@ def parse(String description) {
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd) {
-  log.debug "BasicReport ${cmd}"
+  log.debug cmd
 
   handleReport(cmd)
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.centralscenev1.CentralSceneNotification cmd) {
-  log.debug "CentralSceneNotification ${cmd}"
+  log.debug cmd
 }
 
-def zwaveEvent(physicalgraph.zwave.commands.switchmultilevelv1.SwitchMultilevelReport cmd) {
-  log.debug "SwitchMultilevelReport ${cmd}"
+def zwaveEvent(physicalgraph.zwave.commands.switchmultilevelv3.SwitchMultilevelReport cmd) {
+  log.debug cmd
 
   handleReport(cmd)
 }
