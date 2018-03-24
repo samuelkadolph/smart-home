@@ -26,13 +26,20 @@ metadata {
         tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
           attributeState "off", label: "OFF", action: "switch.on", icon: "st.Home.home30", backgroundColor: "#FFFFFF", nextState: "turningOn"
           attributeState "on", label: "ON", action: "switch.off", icon: "st.Home.home30", backgroundColor: "#00A0DC", nextState: "turningOff"
-          attributeState "turningOn", label: "TURNINGON", action: "switch.off", icon: "st.Home.home30", backgroundColor:"#00A0DC"
-          attributeState "turningOff", label: "TURNINGOFF", action: "switch.on", icon: "st.Home.home30", backgroundColor:"#FFFFFF"
+          attributeState "turningOn", label: "TURNINGON", action: "switch.off", icon: "st.Home.home30", backgroundColor:"#00A0DC", nextState: "turningOff"
+          attributeState "turningOff", label: "TURNINGOFF", action: "switch.on", icon: "st.Home.home30", backgroundColor:"#FFFFFF", nextState: "turningOn"
         }
         tileAttribute ("device.level", key: "SLIDER_CONTROL") {
           attributeState "level", action: "switch level.setLevel"
         }
       }
+
+      standardTile("refresh", "device.switch", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
+        state "default", label:'', action:"refresh.refresh", icon:"st.secondary.configure"
+      }
+
+      main "switch"
+      details "switch", "refresh"
     }
   }
 }
