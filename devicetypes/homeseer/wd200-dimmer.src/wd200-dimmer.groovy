@@ -52,34 +52,34 @@ metadata {
         }
       }
 
-      standardTile("tapUp2", "device.button", width: 2, height: 2, decoration: "flat") {
+      standardTile("tapUp2", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▲▲", action: "tapUp2", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapDown2", "device.button", width: 2, height: 2, decoration: "flat") {
+      standardTile("tapDown2", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▼▼", action: "tapDown2", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapUp3", "device.button", width: 2, height: 2, decoration: "flat") {
+      standardTile("tapUp3", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▲▲▲", action: "tapUp3", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapDown3", "device.button", width: 2, height: 2, decoration: "flat") {
+      standardTile("tapDown3", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▼▼▼", action: "tapDown3", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapUp4", "device.button", width: 2, height: 2, decoration: "flat") {
+      standardTile("tapUp4", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▲▲▲▲", action: "tapUp4", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapDown4", "device.button", width: 2, height: 2, decoration: "flat") {
+      standardTile("tapDown4", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▼▼▼▼", action: "tapDown4", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapUp5", "device.button", width: 2, height: 2, decoration: "flat") {
+      standardTile("tapUp5", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▲▲▲▲▲", action: "tapUp5", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
-      standardTile("tapDown5", "device.button", width: 2, height: 2, decoration: "flat") {
+      standardTile("tapDown5", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Tap ▼▼▼▼▼", action: "tapDown5", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
-      standardTile("holdUp", "device.button", width: 2, height: 2, decoration: "flat") {
+      standardTile("holdUp", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Hold ▲", action: "holdUp", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
-      standardTile("holdDown", "device.button", width: 2, height: 2, decoration: "flat") {
+      standardTile("holdDown", "device.button", width: 1, height: 1, decoration: "flat") {
         state "default", label: "Hold ▼", action: "holdDown", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
       }
 
