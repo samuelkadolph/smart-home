@@ -10,12 +10,53 @@
 
 metadata {
   definition (name: "WD200+ Dimmer", namespace: "HomeSeer", author: "samuelkadolph") {
+    capability "Actuator"
     capability "Button"
+    capability "Configuration"
+    capability "Indicator"
+    capability "Polling"
+    capability "Sensor"
     capability "Switch"
     capability "Switch Level"
 
     fingerprint mfr: "000C", prod: "4447", model: "3036"
+
+    tiles(scale: 2) {
+      multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4, canChangeIcon: true) {
+        tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
+          attributeState "off", label: "OFF", action: "switch.on", icon: "st.Home.home30", backgroundColor: "#FFFFFF", nextState: "turningOn"
+          attributeState "on", label: "ON", action: "switch.off", icon: "st.Home.home30", backgroundColor: "#00A0DC", nextState: "turningOff"
+          attributeState "turningOn", label: "TURNINGON", action: "switch.off", icon: "st.Home.home30", backgroundColor:"#00A0DC"
+          attributeState "turningOff", label: "TURNINGOFF", action: "switch.on", icon: "st.Home.home30", backgroundColor:"#FFFFFF"
+        }
+        tileAttribute ("device.level", key: "SLIDER_CONTROL") {
+          attributeState "level", action: "switch level.setLevel"
+        }
+      }
+    }
   }
+}
+
+def configure() {
+
+}
+
+def off() {
+
+}
+
+def on() {
+
+}
+
+def poll() {
+  zwave.switchMultilevelV1.switchMultilevelGet().format()
+}
+
+def setLevel(Number value) {
+}
+
+def setLevel(Number value, Number rate) {
 }
 
 def parse(String description) {
