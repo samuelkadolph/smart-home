@@ -266,11 +266,17 @@ def zwaveEvent(physicalgraph.zwave.commands.centralscenev1.CentralSceneNotificat
     case 0:
       tapCount = 1
       break
+    case 1:
+      // paddle released
+      break
     case 2:
       tapCount = 1
       value = "held"
       break
-    case 3..6:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
       tapCount = cmd.keyAttributes - 1
       break
     default:
