@@ -50,7 +50,7 @@ metadata {
     command "tapUp4"
     command "tapUp5"
 
-    fingerprint mfr: "000C", prod: "4447", model: "3036"
+    fingerprint mfr: "000C", prod: "4447", model: "3036", deviceJoinName: "HomeSeer WD200+ Dimmer"
 
     tiles(scale: 2) {
       multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4, canChangeIcon: true) {
@@ -104,30 +104,55 @@ metadata {
       }
 
       standardTile("refresh", "device.switch", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
-        state "default", label:'', action:"refresh.refresh", icon:"st.secondary.configure"
+        state "default", label:'', action:"configure", icon:"st.secondary.configure"
       }
 
       main "switch"
       details "switch", "tapUp1", "holdUp", "tapUp2", "tapUp3", "tapUp4", "tapUp5", "tapDown1", "holdDown", "tapDown2", "tapDown3", "tapDown4", "tapDown5", "refresh"
     }
+    
+    preferences {
+      input "localRampRate", "number", title: "Ramp rate for local control in seconds.\r\nRange: 0-90\r\nDefault: 3", required: false, defaultValue: 3, range: "0..90"
+      input "remoteRampRate", "number", title: "Ramp rate for remote control in seconds.\r\nRange: 0-90\r\nDefault: 3", required: false, defaultValue: 3, range: "0..90"
+    }
   }
 }
 
 def configure() {
+  log.debug "configure()"
 
+  sendEvent(name: "numberOfButtons", value: 12)
+
+  def cmds = []
+
+  cmds += buildRampRateConfiguration(11, remoteRampRate)
+  cmds += buildRampRateConfiguration(12, localRampRate)
+
+  log.debug cmds
 }
 
 def off() {
   log.debug "off()"
 
-  zwave.basicV1.basicSet(value: 0).format()
+  def cmds = []
+  
+  cmds << zwave.basicV1.basicSet(value: 0).format()
+  cmds << "delay 3250"
+  cmds << zwave.switchMultilevelV1.switchMultilevelGet().format()
+
+  response(cmds)
 }
 
 def on() {
   log.debug "on()"
 
-  delayBetween([zwave.basicV1.basicSet(value: 0xFF).format(), zwave.switchMultilevelV1.switchMultilevelGet().format()], 5000)
-  // zwave.basicV1.basicSet(value: 0xFF).format()
+  def cmds = []
+  
+  cmds << zwave.basicV1.basicSet(value: 0xFF).format()
+  cmds << "delay 3250"
+  cmds << zwave.switchMultilevelV1.switchMultilevelGet().format()
+
+  response(cmds)
 }
 
 def poll() {
@@ -137,13 +162,10 @@ def poll() {
 def setLevel(Number value) {
   log.debug "setLevel(${value})"
 
-  def onoff = value > 0 ? "on" : "off"
+  sendEvent(name: "switch", value: value > 0 ? "on" : "off")
+  sendEvent(name: "level", value: value)
 
-  [
-    createEvent(name: "switch", value: onoff),
-    createEvent(name: "level", value: value),
-    response(zwave.basicV1.basicSet(value: level).format())
-  ]
+  response(zwave.basicV1.basicSet(value: value).format())
 }
 
 def holdDown1() {
@@ -220,6 +242,13 @@ def zwaveEvent(physicalgraph.zwave.commands.switchmultilevelv3.SwitchMultilevelR
   handleReport(cmd)
 }
 
-private handleReport(physicalgraph.zwave.Command cmd) {
+private buildRampRateConfiguration(Number parameter, Number value) {
+  if (value != null) {
+    zwave.configurationV2.configurationSet(configurationValue: [Math.max(Math.min(value, 90), 0)], parameterNumber: 11, size: 1).format()
+  }
+}
 
+private handleReport(physicalgraph.zwave.Command cmd) {
+  sendEvent(name: "switch", value: cmd.value == 0 ? "off" : "on")
+  sendEvent(name: "level", value: cmd.value, unit: "%")
 }
