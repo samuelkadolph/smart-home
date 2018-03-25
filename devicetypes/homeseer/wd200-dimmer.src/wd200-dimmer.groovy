@@ -110,8 +110,12 @@ metadata {
       main "switch"
       details "switch", "tapUp1", "holdUp", "tapUp2", "tapUp3", "tapUp4", "tapUp5", "tapDown1", "holdDown", "tapDown2", "tapDown3", "tapDown4", "tapDown5", "refresh"
     }
-    
+
     preferences {
+      input "reverseSwitch", "bool", title: "Reverse the paddles if the switch was installed upside down.", defaultValue: false, displayDuringSetup: true
+      input "doubleTapUpForFullBrightness", "bool", title: "Double tap the up paddle for full brightness.", defaultValue: true, displayDuringSetup: true
+      input "doubleTapDownForPreviousBrightness", "bool", title: "Double tap the down paddle to go back to the previous brightness", defaultValue: true, displayDuringSetup: true
+
       input "localRampRate", "number", title: "Ramp rate for local control in seconds.\r\nRange: 0-90\r\nDefault: 3", required: false, defaultValue: 3, range: "0..90"
       input "remoteRampRate", "number", title: "Ramp rate for remote control in seconds.\r\nRange: 0-90\r\nDefault: 3", required: false, defaultValue: 3, range: "0..90"
     }
@@ -135,7 +139,7 @@ def off() {
   log.debug "off()"
 
   def cmds = []
-  
+
   cmds << zwave.basicV1.basicSet(value: 0).format()
   cmds << "delay 3250"
   cmds << zwave.switchMultilevelV1.switchMultilevelGet().format()
@@ -147,7 +151,7 @@ def on() {
   log.debug "on()"
 
   def cmds = []
-  
+
   cmds << zwave.basicV1.basicSet(value: 0xFF).format()
   cmds << "delay 3250"
   cmds << zwave.switchMultilevelV1.switchMultilevelGet().format()
@@ -198,22 +202,29 @@ def tapDown5() {
 
 def tapUp1() {
   log.debug "tapUp1()"
+
+  sendButtonEvent(1, "up")
+  on()
 }
 
 def tapUp2() {
   log.debug "tapUp2()"
+  sendButtonEvent(2, "up")
 }
 
 def tapUp3() {
   log.debug "tapUp3()"
+  sendButtonEvent(3, "up")
 }
 
 def tapUp4() {
   log.debug "tapUp4()"
+  sendButtonEvent(4, "up")
 }
 
 def tapUp5() {
   log.debug "tapUp5()"
+  sendButtonEvent(5, "up")
 }
 
 def parse(String description) {
@@ -234,6 +245,47 @@ def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd) {
 
 def zwaveEvent(physicalgraph.zwave.commands.centralscenev1.CentralSceneNotification cmd) {
   log.debug cmd
+
+  def tapCount = null
+  def paddle = null
+  def value = "pushed"
+
+  switch (cmd.sceneNumber) {
+    case 1:
+      paddle = "up"
+      break
+    case 2:
+      paddle = "down"
+      break
+    default:
+      log.error "CentralSceneNotification unknown sceneNumber"
+      return
+  }
+
+  switch (cmd.keyAttributes) {
+    case 0:
+      tapCount = 1
+      break
+    case 2:
+      tapCount = 1
+      value = "held"
+      break
+    case 3..6:
+      tapCount = cmd.keyAttributes - 1
+      break
+    default:
+      log.error "CentralSceneNotification unknown keyAttributes"
+      return
+  }
+
+  sendButtonEvent(tapCount, paddle, value)
+
+  if (doubleTapUpForFullBrightness && tapCount == 2 && paddle == "up") {
+    // state.previousBrightness = device.level
+  }
+
+  if (doubleTapDownForPreviousBrightness && tapCount == 2 && paddle == "down") {
+  }
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.switchmultilevelv3.SwitchMultilevelReport cmd) {
@@ -251,4 +303,14 @@ private buildRampRateConfiguration(Number parameter, Number value) {
 private handleReport(physicalgraph.zwave.Command cmd) {
   sendEvent(name: "switch", value: cmd.value == 0 ? "off" : "on")
   sendEvent(name: "level", value: cmd.value, unit: "%")
+}
+
+private sendButtonEvent(Number tapCount, String paddle, String value) {
+  def button = 99
+
+  sendEvent(name: "button", value: value, data: [buttonNumber: button], descriptionText: "$device.displayName button $button was $value", isStateChange: true)
+}
+
+private sendButtonEvent(Number tapCount, String paddle) {
+  sendButtonEvent(tapCount, paddle, "pushed")
 }
