@@ -5,7 +5,17 @@
  *
  *
  *  Buttons
- *
+ *    Number  Description
+ *    1       Tap Up
+ *    2       Tap Down
+ *    3       Double Tap Up
+ *    4       Double Tap Down
+ *    5       Triple Tap Up
+ *    6       Triple Tap Down
+ *    7       Quadruple Tap Up
+ *    8       Quadruple Tap Down
+ *    9       Quintuple Tap Up
+ *    10      Quintuple Tap Down
  *
  *  Parameters
  *    Number  Description
@@ -31,11 +41,11 @@ metadata {
     capability "Actuator"
     capability "Button"
     capability "Configuration"
+    capability "Holdable Button"
     capability "Indicator"
     capability "Polling"
-    capability "Sensor"
-    capability "Switch"
     capability "Switch Level"
+    capability "Switch"
 
     command "holdDown1"
     command "holdUp1"
@@ -138,25 +148,13 @@ def configure() {
 def off() {
   log.debug "off()"
 
-  def cmds = []
-
-  cmds << zwave.basicV1.basicSet(value: 0).format()
-  cmds << "delay 3250"
-  cmds << zwave.switchMultilevelV1.switchMultilevelGet().format()
-
-  response(cmds)
+  sendSetCommand(0)
 }
 
 def on() {
   log.debug "on()"
 
-  def cmds = []
-
-  cmds << zwave.basicV1.basicSet(value: 0xFF).format()
-  cmds << "delay 3250"
-  cmds << zwave.switchMultilevelV1.switchMultilevelGet().format()
-
-  response(cmds)
+  sendSetCommand(0xFF, device.latestValue("level"))
 }
 
 def poll() {
@@ -166,10 +164,7 @@ def poll() {
 def setLevel(Number value) {
   log.debug "setLevel(${value})"
 
-  sendEvent(name: "switch", value: value > 0 ? "on" : "off")
-  sendEvent(name: "level", value: value)
-
-  response(zwave.basicV1.basicSet(value: value).format())
+  sendSetCommand(value)
 }
 
 def holdDown1() {
@@ -237,6 +232,10 @@ def parse(String description) {
   }
 }
 
+def updated() {
+
+}
+
 def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd) {
   log.debug cmd
 
@@ -268,9 +267,11 @@ def zwaveEvent(physicalgraph.zwave.commands.centralscenev1.CentralSceneNotificat
       break
     case 1:
       // paddle released
+      vlaue = "held"
       break
     case 2:
-      tapCount = 1
+      // paddle held
+      // tapCount = 1
       value = "held"
       break
     case 3:
@@ -307,8 +308,26 @@ private buildRampRateConfiguration(Number parameter, Number value) {
 }
 
 private handleReport(physicalgraph.zwave.Command cmd) {
+  def cmds = []
+
   sendEvent(name: "switch", value: cmd.value == 0 ? "off" : "on")
   sendEvent(name: "level", value: cmd.value, unit: "%")
+
+  if (state.changeLevel) {
+    log.debug "changeLevel is true"
+    if (cmd.value == state.targetLevel) {
+      log.debug "reached targetLevel of ${state.targetLevel}"
+
+      state.changeLevel = false
+    } else {
+      log.debug "${cmd.value} != ${state.targetLevel}, getting another report"
+
+      cmds << "delay 250"
+      cmds << zwave.switchMultilevelV1.switchMultilevelGet().format()
+    }
+  }
+
+  cmds
 }
 
 private sendButtonEvent(Number tapCount, String paddle, String value) {
@@ -319,4 +338,21 @@ private sendButtonEvent(Number tapCount, String paddle, String value) {
 
 private sendButtonEvent(Number tapCount, String paddle) {
   sendButtonEvent(tapCount, paddle, "pushed")
+}
+
+private sendSetCommand(Number value) {
+  sendSetCommand(value, value)
+}
+
+private sendSetCommand(Number value, Number target) {
+  def cmds = []
+
+  state.changeLevel = true
+  state.targetLevel = target
+
+  cmds << zwave.basicV1.basicSet(value: value).format()
+  cmds << "delay 250"
+  cmds << zwave.switchMultilevelV1.switchMultilevelGet().format()
+
+  response(cmds)
 }
