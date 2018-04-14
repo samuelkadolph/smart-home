@@ -5,19 +5,17 @@
  */
 
 metadata {
-  definition (name: "MIMOLite", namespace: "FortrezZ", author: "samuelkadolph") {
+  definition (namespace: "FortrezZ", name: "MIMOLite Fireplace", author: "samuelkadolph") {
     capability "Configuration"
     capability "Polling"
     capability "Switch"
 
-    fingerprint mfr: "0084", prod: "0453", model: "0111", deviceJoinName: "MIMOLite"
-
     tiles(scale: 2) {
       standardTile("switch", "device.switch", width: 6, height: 4, canChangeIcon: true) {
-        state "off", label: "OFF", action: "switch.on", icon: "st.Home.home30", backgroundColor: "#FFFFFF", nextState: "turningOn"
-        state "on", label: "ON", action: "switch.off", icon: "st.Home.home30", backgroundColor: "#00A0DC", nextState: "turningOff"
-        state "turningOn", label: "TURNINGON", action: "switch.off", icon: "st.Home.home30", backgroundColor:"#00A0DC", nextState: "turningOff"
-        state "turningOff", label: "TURNINGOFF", action: "switch.on", icon: "st.Home.home30", backgroundColor:"#FFFFFF", nextState: "turningOn"
+        state "off", label: "OFF", action: "switch.on", nextState: "turningOn", backgroundColor: "#FFFFFF", icon: "st.Seasonal Winter.seasonal-winter-009"
+        state "on", label: "ON", action: "switch.off", nextState: "turningOff", backgroundColor: "#00A0DC", icon: "st.Seasonal Winter.seasonal-winter-009"
+        state "turningOn", label: "TURNINGON", action: "switch.off", nextState: "turningOff", backgroundColor:"#00A0DC", icon: "st.Seasonal Winter.seasonal-winter-009"
+        state "turningOff", label: "TURNINGOFF", action: "switch.on", nextState: "turningOn", backgroundColor:"#FFFFFF", icon: "st.Seasonal Winter.seasonal-winter-009"
       }
 
       main "switch"
@@ -25,8 +23,6 @@ metadata {
     }
 
     preferences {
-      input "momentaryRelay", "enum", title: "Should the relay be latched or momentary?", options: ["Latched", "Momentary"], displayDuringSetup: true
-      input "momentaryRelayDuration", "decimal", title: "How long should the relay stay on when set to momentary?\r\nRange: 0.1 to 25.5 seconds\r\nDefault: 1.0s", displayDuringSetup: true, range: "0.1..25.5"
     }
   }
 }
@@ -65,7 +61,7 @@ def poll() {
   cmds << zwave.switchMultilevelV1.switcBinaryGet().format()
 
   // TODO analog vs digital sensor read
-  // cmds << 
+  // cmds <<
 
   response(cmds)
 }
@@ -78,4 +74,11 @@ def parse(String description) {
   } else {
     return null
   }
+}
+
+
+def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cmd) {
+  log.debug cmd
+
+  createEvent(name: "switch", value: cmd.value == 0x00 ? "off" : "on")
 }
