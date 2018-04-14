@@ -44,8 +44,12 @@ metadata {
         }
       }
 
+      standardTile("refresh", "device.switch", width: 2, height: 2, decoration: "flat") {
+        state "default", label: "", action: "refresh.refresh", icon: "st.secondary.refresh"
+      }
+
       main "switch"
-      details "switch"
+      details "switch", "refresh"
     }
 
     preferences {
@@ -55,6 +59,12 @@ metadata {
 
 def configure() {
   log.debug "configure()"
+
+  def cmds = []
+
+  cmds << zwave.configurationV2.configurationSet(configurationValue: 0, parameterNumber: 11, size: 1).format()
+
+  log.debug cmds
 }
 
 def off() {
@@ -81,15 +91,12 @@ def on() {
   response(cmds)
 }
 
+def ping() {
+  refresh()
+}
+
 def poll() {
-  def cmds = []
-
-  cmds << zwave.switchBinaryV1.switchBinaryGet().format()
-
-  // TODO analog vs digital sensor read
-  // cmds <<
-
-  response(cmds)
+  refresh()
 }
 
 def parse(String description) {
@@ -102,8 +109,22 @@ def parse(String description) {
   }
 }
 
+def update() {
+  def cmds = []
+
+  cmds << zwave.switchBinaryV1.switchBinaryGet().format()
+
+  response(cmds)
+}
+
 def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cmd) {
   log.debug cmd
 
   createEvent(name: "switch", value: cmd.value == 0x00 ? "off" : "on")
+}
+
+def zwaveEvent(physicalgraph.zwave.Command cmd) {
+  log.debug cmd
+
+  [:]
 }
