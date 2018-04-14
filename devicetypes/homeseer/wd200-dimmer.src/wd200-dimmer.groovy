@@ -63,7 +63,7 @@ metadata {
     fingerprint mfr: "000C", prod: "4447", model: "3036", deviceJoinName: "HomeSeer WD200+ Dimmer"
 
     tiles(scale: 2) {
-      multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4, canChangeIcon: true) {
+      multiAttributeTile(name: "switch", type: "lighting", width: 6, height: 4, canChangeIcon: true) {
         tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
           attributeState "off", label: "OFF", action: "switch.on", icon: "st.Home.home30", backgroundColor: "#FFFFFF", nextState: "turningOn"
           attributeState "on", label: "ON", action: "switch.off", icon: "st.Home.home30", backgroundColor: "#00A0DC", nextState: "turningOff"
