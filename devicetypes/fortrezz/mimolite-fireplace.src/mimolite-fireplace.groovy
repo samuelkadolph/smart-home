@@ -49,7 +49,7 @@ metadata {
       }
 
       main "switch"
-      details "switch", "refresh", "configure"
+      details "switch", "refresh"
     }
 
     preferences {
@@ -61,13 +61,7 @@ metadata {
 def configure() {
   log.debug "configure()"
 
-  def cmds = []
-
-  cmds << zwave.configurationV2.configurationSet(configurationValue: [0], parameterNumber: 3, size: 1).format()
-  cmds << zwave.configurationV2.configurationSet(configurationValue: [3], parameterNumber: 8, size: 1).format()
-  cmds << zwave.configurationV2.configurationSet(configurationValue: [0], parameterNumber: 11, size: 1).format()
-
-  response(delayBetween(cmds, 500))
+  _configure()
 }
 
 def off() {
@@ -124,6 +118,8 @@ def refresh() {
 
 def updated() {
   log.debug "updated()"
+
+  _configure()
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicSet cmd) {
@@ -145,6 +141,18 @@ def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cm
 
 def zwaveEvent(physicalgraph.zwave.Command cmd) {
   [:]
+}
+
+private def _configure() {
+  sendEvent(name: "checkInterval", value: 1920, displayed: false, data: [protocol: "zwave", hubHardwareId: device.hub.hardwareID, offlinePingable: "1"])
+
+  def cmds = []
+
+  cmds << zwave.configurationV2.configurationSet(configurationValue: [0], parameterNumber: 3, size: 1).format()
+  cmds << zwave.configurationV2.configurationSet(configurationValue: [3], parameterNumber: 8, size: 1).format()
+  cmds << zwave.configurationV2.configurationSet(configurationValue: [0], parameterNumber: 11, size: 1).format()
+
+  response(delayBetween(cmds, 500))
 }
 
 private def _refresh() {
