@@ -49,10 +49,11 @@ metadata {
       }
 
       main "switch"
-      details "switch", "refresh"
+      details "switch", "refresh", "configure"
     }
 
     preferences {
+      input "timeCutoff", "number", title: "How many hours should the fireplace be on for?\r\nDefault: 4 hours"
     }
   }
 }
@@ -62,9 +63,11 @@ def configure() {
 
   def cmds = []
 
-  cmds << zwave.configurationV2.configurationSet(configurationValue: 0, parameterNumber: 11, size: 1).format()
+  cmds << zwave.configurationV2.configurationSet(configurationValue: [0], parameterNumber: 3, size: 1).format()
+  cmds << zwave.configurationV2.configurationSet(configurationValue: [3], parameterNumber: 8, size: 1).format()
+  cmds << zwave.configurationV2.configurationSet(configurationValue: [0], parameterNumber: 11, size: 1).format()
 
-  log.debug cmds
+  response(delayBetween(cmds, 500))
 }
 
 def off() {
@@ -73,10 +76,9 @@ def off() {
   def cmds = []
 
   cmds << zwave.basicV1.basicSet(value: 0x00).format()
-  cmds << "delay 250"
   cmds << zwave.switchBinaryV1.switchBinaryGet().format()
 
-  response(cmds)
+  response(delayBetween(cmds))
 }
 
 def on() {
@@ -85,46 +87,70 @@ def on() {
   def cmds = []
 
   cmds << zwave.basicV1.basicSet(value: 0xFF).format()
-  cmds << "delay 250"
   cmds << zwave.switchBinaryV1.switchBinaryGet().format()
 
-  response(cmds)
+  response(delayBetween(cmds))
 }
 
 def ping() {
-  refresh()
+  log.debug "ping()"
+
+  _refresh()
 }
 
 def poll() {
-  refresh()
+  log.debug "poll()"
+
+  _refresh()
 }
 
 def parse(String description) {
   def cmd = zwave.parse(description)
 
   if (cmd) {
+    log.debug cmd
+
     return zwaveEvent(cmd)
   } else {
     return null
   }
 }
 
-def update() {
+def refresh() {
+  log.debug "refresh()"
+
+  _refresh()
+}
+
+def updated() {
+  log.debug "updated()"
+}
+
+def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicSet cmd) {
   def cmds = []
 
-  cmds << zwave.switchBinaryV1.switchBinaryGet().format()
+  if (cmd.value != state.lastSwitchState) {
+    cmds << zwave.basicV1.basicSet(value: device.currentValue("switch") == "off" ? 0xFF : 0x00).format()
+    cmds << zwave.switchBinaryV1.switchBinaryGet().format()
+  }
 
-  response(cmds)
+  state.lastSwitchState = cmd.value
+
+  [response(delayBetween(cmds))]
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cmd) {
-  log.debug cmd
-
   createEvent(name: "switch", value: cmd.value == 0x00 ? "off" : "on")
 }
 
 def zwaveEvent(physicalgraph.zwave.Command cmd) {
-  log.debug cmd
-
   [:]
+}
+
+private def _refresh() {
+  def cmds = []
+
+  cmds << zwave.switchBinaryV1.switchBinaryGet().format()
+
+  response(delayBetween(cmds))
 }
