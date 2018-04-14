@@ -1,5 +1,5 @@
 /*
- * MIMOLite Fireplace
+ * MIMOLite (Fireplace)
  *
  * A SmartThings Device Handler that uses a FortrezZ MIMOLite (see https://www.fortrezz.com/io-modules) to remotely
  * control a gas fireplace while preserving the functionality of the low voltage switch commonly installed.
@@ -27,7 +27,7 @@
  */
 
 metadata {
-  definition (namespace: "FortrezZ", name: "MIMOLite Fireplace", author: "samuelkadolph") {
+  definition (namespace: "FortrezZ", name: "MIMOLite (Fireplace)", author: "samuelkadolph") {
     capability "Configuration"
     capability "Polling"
     capability "Switch"
