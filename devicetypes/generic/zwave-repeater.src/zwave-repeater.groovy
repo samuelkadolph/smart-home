@@ -31,7 +31,7 @@ metadata {
     capability "Health Check"
     capability "Refresh"
 
-    fingerprint mfr: "0086", prod: "0104", model: "0075", deviceJoinName: "Z-Wave Repeater" // Aeotec Range Extender 6
+    fingerprint mfr: "0086", model: "0075", deviceJoinName: "Z-Wave Repeater" // Aeotec Range Extender 6
 
     tiles(scale: 2) {
       multiAttributeTile(name: "status", type: "generic", width: 6, height: 4) {
