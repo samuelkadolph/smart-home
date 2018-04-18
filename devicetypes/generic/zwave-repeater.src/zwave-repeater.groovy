@@ -72,7 +72,7 @@ def ping() {
 def refresh() {
   log.debug("refresh()")
 
-  _refresh(true)
+  _refresh()
 }
 
 def updated() {
@@ -86,30 +86,33 @@ def updated() {
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.versionv1.VersionReport cmd) {
+  if (device.currentValue("status") != "online") {
+    sendEvent(name: "status", value: "online", descriptionText: "Repeater Is Online")
+  }
 
+  log.info("Repeater Is Online")
+
+  state.tryCount = 0
 }
 
 def zwaveEvent(physicalgraph.zwave.Command cmd) {
   [:]
 }
 
-private def _refresh(bool manual) {
+private def _refresh() {
   if (state.tryCount == null) {
     state.tryCount = 0
   }
 
   if (state.tryCount >= 2) {
     if (device.currentValue("status") != "offline") {
-      sendEvent(name: "status", value: "offline", descriptionText: "$device.displayName Is Offline", isStateChange: true, displayed: true)
-      log.info("$device.displayName Is Offline")
+      sendEvent(name: "status", value: "offline", descriptionText: "Repeater Is Offline")
     }
+
+    log.info("Repeater Is Offline")
   }
 
-  state.tryCount++
+  state.tryCount = state.tryCount + 1
 
   response(zwave.versionV1.versionGet().format())
-}
-
-private def _refresh() {
-  _refresh(false)
 }
