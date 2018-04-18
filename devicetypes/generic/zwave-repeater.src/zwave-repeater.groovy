@@ -33,7 +33,7 @@ metadata {
     fingerprint mfr: "0086", prod: "0104", model: "0075", deviceJoinName: "Z-Wave Repeater" // Aeotec Range Extender 6
 
     tiles(scale: 2) {
-      multiAttributeTile(name: "status", type: "generic", width: 6, height: 4, canChangeIcon: true) {
+      multiAttributeTile(name: "status", type: "generic", width: 6, height: 4) {
         tileAttribute("device.status", key: "PRIMARY_CONTROL") {
           attributeState "unknown", label: "UNKNOWN", backgroundColor:"#FFFFFF"
           attributeState "online", label: "ONLINE", backgroundColor: "#00A0DC"
@@ -90,4 +90,12 @@ def updated() {
 
 def zwaveEvent(physicalgraph.zwave.Command cmd) {
   [:]
+}
+
+private def _refresh() {
+  def cmds = []
+
+  cmds << zwave.versionV1.versionGet().format()
+
+  response(cmds)
 }
