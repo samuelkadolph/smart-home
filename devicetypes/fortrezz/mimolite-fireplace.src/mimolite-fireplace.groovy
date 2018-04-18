@@ -35,7 +35,7 @@ metadata {
     capability "Switch"
 
     tiles(scale: 2) {
-      multiAttributeTile(name: "switch", type: "lighting", width: 6, height: 4, canChangeIcon: true) {
+      multiAttributeTile(name: "switch", type: "generic", width: 6, height: 4, canChangeIcon: true) {
         tileAttribute("device.switch", key: "PRIMARY_CONTROL") {
           attributeState "off", label: "OFF", action: "switch.on", nextState: "turningOn", backgroundColor: "#FFFFFF", icon: "st.Seasonal Winter.seasonal-winter-009"
           attributeState "on", label: "ON", action: "switch.off", nextState: "turningOff", backgroundColor: "#00A0DC", icon: "st.Seasonal Winter.seasonal-winter-009"
@@ -86,18 +86,6 @@ def on() {
   response(delayBetween(cmds))
 }
 
-def ping() {
-  log.debug "ping()"
-
-  _refresh()
-}
-
-def poll() {
-  log.debug "poll()"
-
-  _refresh()
-}
-
 def parse(String description) {
   def cmd = zwave.parse(description)
 
@@ -108,6 +96,18 @@ def parse(String description) {
   } else {
     return null
   }
+}
+
+def ping() {
+  log.debug "ping()"
+
+  _refresh()
+}
+
+def poll() {
+  log.debug "poll()"
+
+  _refresh()
 }
 
 def refresh() {
