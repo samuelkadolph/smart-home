@@ -35,9 +35,9 @@ metadata {
     tiles(scale: 2) {
       multiAttributeTile(name: "status", type: "generic", width: 6, height: 4) {
         tileAttribute("device.status", key: "PRIMARY_CONTROL") {
-          attributeState "unknown", label: "UNKNOWN", backgroundColor:"#FFFFFF", icon: "https://cdn.rawgit.com/samuelkadolph/smart-home/d3e6730/icons/zwave-repeater.png"
-          attributeState "online", label: "ONLINE", backgroundColor: "#00A0DC", icon: "https://cdn.rawgit.com/samuelkadolph/smart-home/d3e6730/icons/zwave-repeater.png"
-          attributeState "offline", label: "OFFLINE", backgroundColor: "#FFFFFF", icon: "https://cdn.rawgit.com/samuelkadolph/smart-home/d3e6730/icons/zwave-repeater.png"
+          attributeState "unknown", label: "UNKNOWN", backgroundColor:"#FFFFFF"
+          attributeState "online", label: "ONLINE", backgroundColor: "#00A0DC"
+          attributeState "offline", label: "OFFLINE", backgroundColor: "#FFFFFF"
         }
       }
 
