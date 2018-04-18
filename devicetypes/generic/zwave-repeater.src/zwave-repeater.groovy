@@ -35,9 +35,9 @@ metadata {
     tiles(scale: 2) {
       multiAttributeTile(name: "status", type: "generic", width: 6, height: 4) {
         tileAttribute("device.status", key: "PRIMARY_CONTROL") {
-          attributeState "unknown", label: "UNKNOWN", backgroundColor:"#FFFFFF", icon: "https://cdn.rawgit.com/samuelkadolph/smart-home/39a2cd66/icons/zwave-repeater.png"
-          attributeState "online", label: "ONLINE", backgroundColor: "#00A0DC", icon: "https://cdn.rawgit.com/samuelkadolph/smart-home/39a2cd66/icons/zwave-repeater.png"
-          attributeState "offline", label: "OFFLINE", backgroundColor: "#FFFFFF", icon: "https://cdn.rawgit.com/samuelkadolph/smart-home/39a2cd66/icons/zwave-repeater.png"
+          attributeState "unknown", label: "UNKNOWN", backgroundColor:"#FFFFFF", icon: "https://cdn.rawgit.com/samuelkadolph/smart-home/7fc1390a/icons/zwave-repeater.png"
+          attributeState "online", label: "ONLINE", backgroundColor: "#00A0DC", icon: "https://cdn.rawgit.com/samuelkadolph/smart-home/7fc1390a/icons/zwave-repeater.png"
+          attributeState "offline", label: "OFFLINE", backgroundColor: "#FFFFFF", icon: "https://cdn.rawgit.com/samuelkadolph/smart-home/7fc1390a/icons/zwave-repeater.png"
         }
       }
 
@@ -86,6 +86,15 @@ def updated() {
   cmds << zwave.versionV1.versionGet().format()
 
   response(cmds)
+}
+
+def zwaveEvent(physicalgraph.zwave.commands.manufacturerspecificv2.ManufacturerSpecificReport cmd) {
+}
+
+def zwaveEvent(physicalgraph.zwave.commands.versionv1.VersionReport cmd) {
+  def firmware = "${cmd.applicationVersion}.${cmd.applicationSubVersion.toString().padLeft(2, "0")}"
+
+  updateDataValue("firmware", firmware)
 }
 
 def zwaveEvent(physicalgraph.zwave.Command cmd) {
