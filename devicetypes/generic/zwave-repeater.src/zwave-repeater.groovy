@@ -1,7 +1,8 @@
 /*
- * Z-Wave Repeater
+ * Generic : Z-Wave Repeater
  *
- * A
+ * A SmartThings Device Handler for generic Z-Wave Repeaters. Checks if the device is online every half hour and if it
+ * misses 2 or more check ins, will be marked as offline.
  *
  * Copyright (c) 2018 Samuel Kadolph
  *
@@ -26,7 +27,7 @@
  */
 
 metadata {
-  definition (namespace: "generic", name: "Z-Wave Repeater", author: "samuelkadolph") {
+  definition (namespace: "Generic", name: "Z-Wave Repeater", author: "samuelkadolph") {
     capability "Health Check"
     capability "Refresh"
 
