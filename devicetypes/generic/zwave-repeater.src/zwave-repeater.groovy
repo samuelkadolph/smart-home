@@ -55,7 +55,7 @@ def parse(String description) {
   def cmd = zwave.parse(description)
 
   if (cmd) {
-    log.debug cmd
+    log.debug(cmd)
 
     return zwaveEvent(cmd)
   } else {
@@ -64,47 +64,52 @@ def parse(String description) {
 }
 
 def ping() {
-  log.debug "ping()"
+  log.debug("ping()")
 
   _refresh()
 }
 
 def refresh() {
-  log.debug "refresh()"
+  log.debug("refresh()")
 
-  _refresh()
+  _refresh(true)
 }
 
 def updated() {
-  log.debug "updated()"
+  log.debug("updated()")
 
   def cmds = []
 
   sendEvent(name: "checkInterval", value: 1920, displayed: false, data: [protocol: "zwave", hubHardwareId: device.hub.hardwareID, offlinePingable: "1"])
 
-  cmds << zwave.manufacturerSpecificV2.manufacturerSpecificGet().format()
-  cmds << zwave.versionV1.versionGet().format()
-
-  response(cmds)
-}
-
-def zwaveEvent(physicalgraph.zwave.commands.manufacturerspecificv2.ManufacturerSpecificReport cmd) {
+  _refresh()
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.versionv1.VersionReport cmd) {
-  def firmware = "${cmd.applicationVersion}.${cmd.applicationSubVersion.toString().padLeft(2, "0")}"
 
-  updateDataValue("firmware", firmware)
 }
 
 def zwaveEvent(physicalgraph.zwave.Command cmd) {
   [:]
 }
 
+private def _refresh(bool manual) {
+  if (state.tryCount == null) {
+    state.tryCount = 0
+  }
+
+  if (state.tryCount >= 2) {
+    if (device.currentValue("status") != "offline") {
+      sendEvent(name: "status", value: "offline", descriptionText: "$device.displayName Is Offline", isStateChange: true, displayed: true)
+      log.info("$device.displayName Is Offline")
+    }
+  }
+
+  state.tryCount++
+
+  response(zwave.versionV1.versionGet().format())
+}
+
 private def _refresh() {
-  def cmds = []
-
-  cmds << zwave.versionV1.versionGet().format()
-
-  response(cmds)
+  _refresh(false)
 }
