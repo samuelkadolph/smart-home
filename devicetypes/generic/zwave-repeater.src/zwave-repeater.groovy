@@ -1,7 +1,7 @@
 /*
  * Generic : Z-Wave Repeater
  *
- * A SmartThings Device Handler for generic Z-Wave Repeaters. Checks if the device is online every half hour and if it
+ * A SmartThings Device Handler for generic Z-Wave Repeaters. Checks if the device is online every 8 minutes and if it
  * misses 2 or more check ins, will be marked as offline.
  *
  * Copyright (c) 2018 Samuel Kadolph
@@ -81,7 +81,7 @@ def updated() {
 
   def cmds = []
 
-  sendEvent(name: "checkInterval", value: 1920, displayed: false, data: [protocol: "zwave", hubHardwareId: device.hub.hardwareID, offlinePingable: "1"])
+  sendEvent(name: "checkInterval", value: 480, displayed: false, data: [protocol: "zwave", hubHardwareId: device.hub.hardwareID, offlinePingable: "1"])
 
   _refresh()
 }
@@ -89,6 +89,8 @@ def updated() {
 def zwaveEvent(physicalgraph.zwave.commands.versionv1.VersionReport cmd) {
   if (device.currentValue("status") != "online") {
     sendEvent(name: "status", value: "online", descriptionText: "Repeater Is Online")
+  } else {
+    sendEvent(name: "status", value: "online", isStateChange: false)
   }
 
   log.info("Repeater Is Online")
