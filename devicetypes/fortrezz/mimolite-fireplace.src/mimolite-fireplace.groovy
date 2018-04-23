@@ -144,7 +144,7 @@ def zwaveEvent(physicalgraph.zwave.Command cmd) {
 }
 
 private def _configure() {
-  sendEvent(name: "checkInterval", value: 1920, displayed: false, data: [protocol: "zwave", hubHardwareId: device.hub.hardwareID, offlinePingable: "1"])
+  sendEvent(name: "checkInterval", value: 960, displayed: false, data: [protocol: "zwave", hubHardwareId: device.hub.hardwareID, offlinePingable: "1"])
 
   def cmds = []
 
