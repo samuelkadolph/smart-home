@@ -79,8 +79,6 @@ def refresh() {
 def updated() {
   log.debug("updated()")
 
-  def cmds = []
-
   sendEvent(name: "checkInterval", value: 480, displayed: false, data: [protocol: "zwave", hubHardwareId: device.hub.hardwareID, offlinePingable: "1"])
 
   _refresh()
