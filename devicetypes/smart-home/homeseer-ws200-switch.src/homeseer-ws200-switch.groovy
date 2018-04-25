@@ -61,10 +61,10 @@ metadata {
     tiles(scale: 2) {
       multiAttributeTile(name: "switch", type: "lighting", width: 6, height: 4, canChangeIcon: true) {
         tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-          attributeState "off", label: "OFF", action: "switch.on", icon: "st.Home.home30", backgroundColor: "#FFFFFF", nextState: "turningOn"
-          attributeState "on", label: "ON", action: "switch.off", icon: "st.Home.home30", backgroundColor: "#00A0DC", nextState: "turningOff"
-          attributeState "turningOn", label: "TURNINGON", action: "switch.off", icon: "st.Home.home30", backgroundColor:"#00A0DC", nextState: "turningOff"
-          attributeState "turningOff", label: "TURNINGOFF", action: "switch.on", icon: "st.Home.home30", backgroundColor:"#FFFFFF", nextState: "turningOn"
+          attributeState "off", label: "OFF", action: "switch.on", nextState: "turningOn", backgroundColor: "#FFFFFF", icon: "st.Home.home30"
+          attributeState "on", label: "ON", action: "switch.off", nextState: "turningOff", backgroundColor: "#00A0DC", icon: "st.Home.home30"
+          attributeState "turningOn", label: "TURNINGON", action: "switch.off", nextState: "turningOff", backgroundColor: "#00A0DC", icon: "st.Home.home30"
+          attributeState "turningOff", label: "TURNINGOFF", action: "switch.on", nextState: "turningOn", backgroundColor: "#FFFFFF", icon: "st.Home.home30"
         }
       }
 
@@ -106,8 +106,8 @@ metadata {
         state "default", label: "Tap ▼▼▼▼▼", action: "tapDown5", backgroundColor: "#FFFFFF"
       }
 
-      standardTile("refresh", "device.switch", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
-        state "default", label:"", action:"configure", icon:"st.secondary.configure"
+      standardTile("refresh", "device.refresh", width: 2, height: 2, decoration: "flat") {
+        state "default", label: "", action: "refresh.refresh", icon: "st.secondary.refresh"
       }
 
       main "switch"
@@ -151,6 +151,8 @@ def poll() {
 
 def tapDown1() {
   log.debug("tapDown1()")
+
+  _set(0x00)
 }
 
 def tapDown2() {
@@ -171,6 +173,8 @@ def tapDown5() {
 
 def tapUp1() {
   log.debug("tapUp1()")
+
+  _set(0xFF)
 }
 
 def tapUp2() {
@@ -251,7 +255,7 @@ private _set(Number value) {
 
   cmds << zwave.basicV1.basicSet(value: value).format()
   cmds << "delay 250"
-  cmds << zwave.switchMultilevelV1.switchBinaryGet().format()
+  cmds << zwave.switchBinaryV1.switchBinaryGet().format()
 
   response(cmds)
 }
