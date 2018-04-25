@@ -1,8 +1,8 @@
 /*
  *  HomeSeer HS-WS200+
- *    A SmartThings Device Handler for the HomeSeer WS200+ RGB wall switch.
+ *    SmartThings Device Handler for the HomeSeer WS200+ wall switch with RGB indictator.
  *
- *    See: https://shop.homeseer.com/products/hsws200
+ *    Website: https://shop.homeseer.com/products/hsws200
  *
  *  Buttons
  *    TODO
