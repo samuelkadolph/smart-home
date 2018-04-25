@@ -5,9 +5,6 @@
  *
  *    Website: https://www.fortrezz.com/io-modules
  *
- *  Parameters
- *    See /docs/Tech+Appendix+MIMOlite+8May2017.pdf
- *
  *  Copyright (c) 2018 Samuel Kadolph
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -31,7 +28,7 @@
  */
 
 metadata {
-  definition (namespace: "FortrezZ", name: "MIMOLite (Fireplace)", author: "samuelkadolph") {
+  definition (namespace: "smart-home", name: "FortrezZ MIMOLite (Fireplace)", author: "samuelkadolph") {
     capability "Configuration"
     capability "Health Check"
     capability "Polling"

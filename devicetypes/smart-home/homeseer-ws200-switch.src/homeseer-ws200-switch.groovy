@@ -7,9 +7,6 @@
  *  Buttons
  *    TODO
  *
- *  Parameters
- *    TODO
- *
  *  Copyright (c) 2018 Samuel Kadolph
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
