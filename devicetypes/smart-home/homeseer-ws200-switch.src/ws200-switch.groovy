@@ -112,6 +112,7 @@ metadata {
 
       main "switch"
       details "switch", "tapUp1", "holdUp", "tapUp2", "tapUp3", "tapUp4", "tapUp5", "tapDown1", "holdDown", "tapDown2", "tapDown3", "tapDown4", "tapDown5", "refresh"
+    }
   }
 }
 
