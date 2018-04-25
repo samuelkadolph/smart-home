@@ -1,8 +1,8 @@
 /*
- *  HomeSeer HS-WD100+
+ *  HomeSeer HS-WD200+
+ *    SmartThings Device Handler for the HomeSeer WS200+ wall dimmer with RGB indictators.
  *
- *
- *
+ *    Website: https://shop.homeseer.com/products/hswd200
  *
  *  Buttons
  *    Number  Description
@@ -17,27 +17,30 @@
  *    9       Quintuple Tap Up
  *    10      Quintuple Tap Down
  *
- *  Parameters
- *    Number  Description
- *    3       Bottom LED operation
- *    4       Paddle load orientation
- *    11      Ramp rate for remote control
- *    12      Ramp rate for local control
- *    13      Mode of operation
- *    14      Normal mode LED color
- *    21
- *    22
- *    23
- *    24
- *    25
- *    26
- *    27
- *    30
- *    31
+ *  Copyright (c) 2018 Samuel Kadolph
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining
+ *  a copy of this software and associated documentation files (the
+ *  "Software"), to deal in the Software without restriction, including
+ *  without limitation the rights to use, copy, modify, merge, publish,
+ *  distribute, sublicense, and/or sell copies of the Software, and to
+ *  permit persons to whom the Software is furnished to do so, subject to
+ *  the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be
+ *  included in all copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ *  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ *  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ *  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ *  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 metadata {
-  definition (name: "WD200+ Dimmer", namespace: "HomeSeer", author: "samuelkadolph") {
+  definition (namespace: "smart-home", name: "HomeSeer WD200+ Dimmer", author: "samuelkadolph") {
     capability "Actuator"
     capability "Button"
     capability "Configuration"
@@ -60,7 +63,7 @@ metadata {
     command "tapUp4"
     command "tapUp5"
 
-    fingerprint mfr: "000C", prod: "4447", model: "3036", deviceJoinName: "HomeSeer WD200+ Dimmer"
+    fingerprint mfr: "000C", model: "3036", deviceJoinName: "HomeSeer WD200+ Dimmer"
 
     tiles(scale: 2) {
       multiAttributeTile(name: "switch", type: "lighting", width: 6, height: 4, canChangeIcon: true) {
@@ -113,8 +116,8 @@ metadata {
         state "default", label: "Tap ▼▼▼▼▼", action: "tapDown5", backgroundColor: "#FFFFFF"
       }
 
-      standardTile("refresh", "device.switch", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
-        state "default", label:'', action:"configure", icon:"st.secondary.configure"
+      standardTile("refresh", "device.refresh", width: 2, height: 2, decoration: "flat") {
+        state "default", label: "", action: "refresh.refresh", icon: "st.secondary.refresh"
       }
 
       main "switch"
