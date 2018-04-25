@@ -44,6 +44,7 @@ metadata {
     capability "Actuator"
     capability "Button"
     capability "Configuration"
+    capability "Health Check"
     capability "Holdable Button"
     capability "Indicator"
     capability "Polling"
