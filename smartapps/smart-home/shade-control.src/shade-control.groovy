@@ -35,7 +35,6 @@ definition(
   iconX3Url: "http://cdn.device-icons.smartthings.com/Home/home9-icn@3x.png"
 )
 
-
 preferences {
   section("Shades to control") {
     input "shades", "capability.windowShade", multiple: true
