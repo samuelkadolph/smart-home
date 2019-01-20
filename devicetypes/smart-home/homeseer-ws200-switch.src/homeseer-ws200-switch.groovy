@@ -121,11 +121,15 @@ def configure() {
 }
 
 def holdDown1() {
-  log.debug("holdDown1()")
+  log.debug "holdDown1()"
+
+  sendButtonEvent(1, "down", "held")
 }
 
 def holdUp1() {
-  log.debug("holdUp1()")
+  log.debug "holdUp1()"
+
+  sendButtonEvent(1, "up", "held")
 }
 
 def off() {
@@ -147,47 +151,67 @@ def poll() {
 }
 
 def tapDown1() {
-  log.debug("tapDown1()")
+  log.debug "tapDown1()"
+
+  sendButtonEvent(1, "down")
 
   _set(0x00)
 }
 
 def tapDown2() {
-  log.debug("tapDown2()")
+  log.debug "tapDown2()"
+
+  sendButtonEvent(2, "down")
 }
 
 def tapDown3() {
-  log.debug("tapDown3()")
+  log.debug "tapDown3()"
+
+  sendButtonEvent(3, "down")
 }
 
 def tapDown4() {
-  log.debug("tapDown4()")
+  log.debug "tapDown4()"
+
+  sendButtonEvent(4, "down")
 }
 
 def tapDown5() {
-  log.debug("tapDown5()")
+  log.debug "tapDown5()"
+
+  sendButtonEvent(5, "down")
 }
 
 def tapUp1() {
-  log.debug("tapUp1()")
+  log.debug "tapUp1()"
+
+  sendButtonEvent(1, "up")
 
   _set(0xFF)
 }
 
 def tapUp2() {
-  log.debug("tapUp2()")
+  log.debug "tapUp2()"
+
+  sendButtonEvent(2, "up")
 }
 
 def tapUp3() {
-  log.debug("tapUp3()")
+  log.debug "tapUp3()"
+
+  sendButtonEvent(3, "up")
 }
 
 def tapUp4() {
-  log.debug("tapUp4()")
+  log.debug "tapUp4()"
+
+  sendButtonEvent(4, "up")
 }
 
 def tapUp5() {
-  log.debug("tapUp5()")
+  log.debug "tapUp5()"
+
+  sendButtonEvent(5, "up")
 }
 
 def parse(String description) {
@@ -231,6 +255,16 @@ def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cm
 
 def zwaveEvent(physicalgraph.zwave.Command cmd) {
   [:]
+}
+
+private sendButtonEvent(Number tapCount, String paddle) {
+  sendButtonEvent(tapCount, paddle, "pushed")
+}
+
+private sendButtonEvent(Number tapCount, String paddle, String value) {
+  def button = paddle == "up" ? (tapCount * 2) - 1 : tapCount * 2
+
+  sendEvent(name: "button", value: value, data: [buttonNumber: button], descriptionText: "$device.displayName button $button was $value", isStateChange: true)
 }
 
 private _configure() {
