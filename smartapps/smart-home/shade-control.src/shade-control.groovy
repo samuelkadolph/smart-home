@@ -28,7 +28,7 @@ definition(
   name: "Shade Control",
   namespace: "smart-home",
   author: "Samuel Kadolph",
-  description: "Control your shades with a switch",
+  description: "Control window shades with wall switches",
   category: "",
   iconUrl: "http://cdn.device-icons.smartthings.com/Home/home9-icn.png",
   iconX2Url: "http://cdn.device-icons.smartthings.com/Home/home9-icn@2x.png",
@@ -41,7 +41,7 @@ preferences {
     input "shades", "capability.windowShade", multiple: true
   }
 
-  section("Controlled by these switches") {
+  section("Using these switches") {
     input "switches", "capability.switch", multiple: true
   }
 }
