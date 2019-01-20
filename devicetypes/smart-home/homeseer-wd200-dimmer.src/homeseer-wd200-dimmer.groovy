@@ -69,10 +69,10 @@ metadata {
     tiles(scale: 2) {
       multiAttributeTile(name: "switch", type: "lighting", width: 6, height: 4, canChangeIcon: true) {
         tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-          attributeState "off", label: "OFF", action: "switch.on", icon: "st.Home.home30", backgroundColor: "#FFFFFF", nextState: "turningOn"
-          attributeState "on", label: "ON", action: "switch.off", icon: "st.Home.home30", backgroundColor: "#00A0DC", nextState: "turningOff"
-          attributeState "turningOn", label: "TURNINGON", action: "switch.off", icon: "st.Home.home30", backgroundColor:"#00A0DC", nextState: "turningOff"
-          attributeState "turningOff", label: "TURNINGOFF", action: "switch.on", icon: "st.Home.home30", backgroundColor:"#FFFFFF", nextState: "turningOn"
+          attributeState "off", label: "OFF", action: "switch.on", nextState: "turningOn", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
+          attributeState "on", label: "ON", action: "switch.off", nextState: "turningOff", icon: "st.Home.home30", backgroundColor: "#00A0DC"
+          attributeState "turningOn", label: "TURNINGON", action: "switch.off", nextState: "turningOff", icon: "st.Home.home30", backgroundColor: "#00A0DC"
+          attributeState "turningOff", label: "TURNINGOFF", action: "switch.on", nextState: "turningOn", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
         }
         tileAttribute ("device.level", key: "SLIDER_CONTROL") {
           attributeState "level", action: "switch level.setLevel"
@@ -132,8 +132,6 @@ metadata {
 
       input "localRampRate", "number", title: "Ramp rate for local control in seconds.\r\nRange: 0-90\r\nDefault: 3", required: false, defaultValue: 3, range: "0..90"
       input "remoteRampRate", "number", title: "Ramp rate for remote control in seconds.\r\nRange: 0-90\r\nDefault: 3", required: false, defaultValue: 3, range: "0..90"
-
-      input "shades", "capability.windowShade", title: "Shades to control with triple tap.", multiple: true
     }
   }
 }
@@ -161,80 +159,80 @@ def poll() {
 }
 
 def setLevel(Number value) {
-  log.debug "setLevel(${value})"
+  log.debug("setLevel(${value})")
 
   sendSetCommand(value)
 }
 
 def holdDown1() {
-  log.debug "holdDown1()"
+  log.debug("holdDown1()")
 
   sendButtonEvent(1, "down", "held")
 }
 
 def holdUp1() {
-  log.debug "holdUp1()"
+  log.debug("holdUp1()")
 
   sendButtonEvent(1, "up", "held")
 }
 
 def tapDown1() {
-  log.debug "tapDown1()"
+  log.debug("tapDown1()")
 
   sendButtonEvent(1, "down")
 }
 
 def tapDown2() {
-  log.debug "tapDown2()"
+  log.debug("tapDown2()")
 
   sendButtonEvent(2, "down")
 }
 
 def tapDown3() {
-  log.debug "tapDown3()"
+  log.debug("tapDown3()")
 
   sendButtonEvent(3, "down")
 }
 
 def tapDown4() {
-  log.debug "tapDown4()"
+  log.debug("tapDown4()")
 
   sendButtonEvent(4, "down")
 }
 
 def tapDown5() {
-  log.debug "tapDown5()"
+  log.debug("tapDown5()")
 
   sendButtonEvent(5, "down")
 }
 
 def tapUp1() {
-  log.debug "tapUp1()"
+  log.debug("tapUp1()")
 
   sendButtonEvent(1, "up")
   on()
 }
 
 def tapUp2() {
-  log.debug "tapUp2()"
+  log.debug("tapUp2()")
 
   sendButtonEvent(2, "up")
 }
 
 def tapUp3() {
-  log.debug "tapUp3()"
+  log.debug("tapUp3()")
 
   sendButtonEvent(3, "up")
 }
 
 def tapUp4() {
-  log.debug "tapUp4()"
+  log.debug("tapUp4()")
 
   sendButtonEvent(4, "up")
 }
 
 def tapUp5() {
-  log.debug "tapUp5()"
+  log.debug("tapUp5()")
 
   sendButtonEvent(5, "up")
 }
@@ -268,7 +266,7 @@ def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd) {
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.centralscenev1.CentralSceneNotification cmd) {
-  log.debug cmd
+  log.debug("zwaveEvent ${cmd}")
 
   def tapCount = null
   def paddle = null
@@ -313,8 +311,6 @@ def zwaveEvent(physicalgraph.zwave.commands.centralscenev1.CentralSceneNotificat
   sendButtonEvent(tapCount, paddle, value)
 
   if (doubleTapUpForFullBrightness && tapCount == 2 && paddle == "up") {
-    // state.previousBrightness = device.level
-    // doTapUp2()
   }
 
   if (doubleTapDownForPreviousBrightness && tapCount == 2 && paddle == "down") {

@@ -5,7 +5,17 @@
  *    Website: https://shop.homeseer.com/products/hsws200
  *
  *  Buttons
- *    TODO
+ *    Number  Description
+ *    1       Tap Up
+ *    2       Tap Down
+ *    3       Double Tap Up
+ *    4       Double Tap Down
+ *    5       Triple Tap Up
+ *    6       Triple Tap Down
+ *    7       Quadruple Tap Up
+ *    8       Quadruple Tap Down
+ *    9       Quintuple Tap Up
+ *    10      Quintuple Tap Down
  *
  *  Copyright (c) 2018 Samuel Kadolph
  *
@@ -30,7 +40,7 @@
  */
 
 metadata {
-  definition (name: "HomeSeer WS200+ Switch", namespace: "smart-home", author: "samuelkadolph") {
+  definition (name: "HomeSeer WS200+ Switch", author: "samuelkadolph") {
     capability "Actuator"
     capability "Button"
     capability "Configuration"
@@ -58,10 +68,10 @@ metadata {
     tiles(scale: 2) {
       multiAttributeTile(name: "switch", type: "lighting", width: 6, height: 4, canChangeIcon: true) {
         tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-          attributeState "off", label: "OFF", action: "switch.on", nextState: "turningOn", backgroundColor: "#FFFFFF", icon: "st.Home.home30"
-          attributeState "on", label: "ON", action: "switch.off", nextState: "turningOff", backgroundColor: "#00A0DC", icon: "st.Home.home30"
-          attributeState "turningOn", label: "TURNINGON", action: "switch.off", nextState: "turningOff", backgroundColor: "#00A0DC", icon: "st.Home.home30"
-          attributeState "turningOff", label: "TURNINGOFF", action: "switch.on", nextState: "turningOn", backgroundColor: "#FFFFFF", icon: "st.Home.home30"
+          attributeState "off", label: "OFF", action: "switch.on", nextState: "turningOn", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
+          attributeState "on", label: "ON", action: "switch.off", nextState: "turningOff", icon: "st.Home.home30", backgroundColor: "#00A0DC"
+          attributeState "turningOn", label: "TURNINGON", action: "switch.off", nextState: "turningOff", icon: "st.Home.home30", backgroundColor: "#00A0DC"
+          attributeState "turningOff", label: "TURNINGOFF", action: "switch.on", nextState: "turningOn", icon: "st.Home.home30", backgroundColor: "#FFFFFF"
         }
       }
 
@@ -121,13 +131,13 @@ def configure() {
 }
 
 def holdDown1() {
-  log.debug "holdDown1()"
+  log.debug("holdDown1()")
 
   sendButtonEvent(1, "down", "held")
 }
 
 def holdUp1() {
-  log.debug "holdUp1()"
+  log.debug("holdUp1()")
 
   sendButtonEvent(1, "up", "held")
 }
@@ -135,81 +145,79 @@ def holdUp1() {
 def off() {
   log.debug("off()")
 
-  _set(0x00)
+  sendSetCommand(0x00)
 }
 
 def on() {
   log.debug("on()")
 
-  _set(0xFF)
+  sendSetCommand(0xFF)
 }
 
 def poll() {
   log.debug("poll()")
 
-  _refresh()
+  sendGetCommand()
 }
 
 def tapDown1() {
-  log.debug "tapDown1()"
+  log.debug("tapDown1()")
 
   sendButtonEvent(1, "down")
-
-  _set(0x00)
+  sendSetCommand(0x00)
 }
 
 def tapDown2() {
-  log.debug "tapDown2()"
+  log.debug("tapDown2()")
 
   sendButtonEvent(2, "down")
 }
 
 def tapDown3() {
-  log.debug "tapDown3()"
+  log.debug("tapDown3()")
 
   sendButtonEvent(3, "down")
 }
 
 def tapDown4() {
-  log.debug "tapDown4()"
+  log.debug("tapDown4()")
 
   sendButtonEvent(4, "down")
 }
 
 def tapDown5() {
-  log.debug "tapDown5()"
+  log.debug("tapDown5()")
 
   sendButtonEvent(5, "down")
 }
 
 def tapUp1() {
-  log.debug "tapUp1()"
+  log.debug("tapUp1()")
 
   sendButtonEvent(1, "up")
-
-  _set(0xFF)
+  sendSetCommand(0xFF)
 }
 
 def tapUp2() {
-  log.debug "tapUp2()"
+  log.debug("tapUp2()")
 
   sendButtonEvent(2, "up")
 }
 
 def tapUp3() {
-  log.debug "tapUp3()"
+  log.debug("tapUp3()")
 
   sendButtonEvent(3, "up")
 }
 
 def tapUp4() {
-  log.debug "tapUp4()"
+  log.debug("tapUp4()")
 
   sendButtonEvent(4, "up")
 }
 
 def tapUp5() {
-  log.debug "tapUp5()"
+  log.debug("tapUp5()")
 
   sendButtonEvent(5, "up")
 }
@@ -228,13 +236,13 @@ def parse(String description) {
 def ping() {
   log.debug("ping()")
 
-  _refresh()
+  sendGetCommand()
 }
 
 def refresh() {
   log.debug("refresh()")
 
-  _refresh()
+  sendGetCommand()
 }
 
 def updated() {
@@ -244,13 +252,61 @@ def updated() {
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd) {
+  log.debug("zwaveEvent ${cmd}")
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.centralscenev1.CentralSceneNotification cmd) {
+  log.debug("zwaveEvent ${cmd}")
+
+  def tapCount = null
+  def paddle = null
+  def value = "pushed"
+
+  switch (cmd.sceneNumber) {
+    case 1:
+      paddle = "up"
+      break
+    case 2:
+      paddle = "down"
+      break
+    default:
+      log.error("CentralSceneNotification unknown sceneNumber: '$cmd.sceneNumber'")
+      return
+  }
+
+  switch (cmd.keyAttributes) {
+    case 0:
+      tapCount = 1
+      break
+    case 1:
+      // paddle released
+      value = "held"
+      break
+    case 2:
+      // paddle held
+      // tapCount = 1
+      value = "held"
+      break
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+      tapCount = cmd.keyAttributes - 1
+      break
+    default:
+      log.error("CentralSceneNotification unknown keyAttributes: '$cmd.keyAttributes'")
+      return
+  }
+
+  sendButtonEvent(tapCount, paddle, value)
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cmd) {
-  createEvent(name: "switch", value: cmd.value == 0x00 ? "off" : "on")
+  log.debug("zwaveEvent ${cmd}")
+
+  def newValue = cmd.value == 0x00 ? "off" : "on"
+
+  createEvent(name: "switch", value: newValue, isStateChange: device.value == newValue)
 }
 
 def zwaveEvent(physicalgraph.zwave.Command cmd) {
@@ -267,13 +323,7 @@ private sendButtonEvent(Number tapCount, String paddle, String value) {
   sendEvent(name: "button", value: value, data: [buttonNumber: button], descriptionText: "$device.displayName button $button was $value", isStateChange: true)
 }
 
-private _configure() {
-  sendEvent(name: "checkInterval", value: 960, displayed: false, data: [protocol: "zwave", hubHardwareId: device.hub.hardwareID, offlinePingable: "1"])
-
-  []
-}
-
-private _refresh() {
+private sendGetCommand() {
   def cmds = []
 
   cmds << zwave.switchBinaryV1.switchBinaryGet().format()
@@ -281,7 +331,7 @@ private _refresh() {
   response(cmds)
 }
 
-private _set(Number value) {
+private sendSetCommand(Number value) {
   def cmds = []
 
   cmds << zwave.basicV1.basicSet(value: value).format()
@@ -289,4 +339,10 @@ private _set(Number value) {
   cmds << zwave.switchBinaryV1.switchBinaryGet().format()
 
   response(cmds)
+}
+
+private _configure() {
+  sendEvent(name: "checkInterval", value: 960, displayed: false, data: [protocol: "zwave", hubHardwareId: device.hub.hardwareID, offlinePingable: "1"])
+
+  [:]
 }

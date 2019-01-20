@@ -1,5 +1,5 @@
 /*
- *  Lights On Your Return
+ *  Lights On My Return
  *    SmartThings SmartApp that turns lights on when you get home and then off after a delay.
  *
  *  Copyright (c) 2018 Samuel Kadolph
@@ -25,10 +25,10 @@
  */
 
 definition(
-  name: "Lights On Your Return",
+  name: "Lights On My Return",
   namespace: "smart-home",
   author: "Samuel Kadolph",
-  description: "Todo",
+  description: "Turn on lights when you get home and off afterwards",
   category: "Safety & Security",
   iconUrl: "http://cdn.device-icons.smartthings.com/Lighting/light13-icn.png",
   iconX2Url: "http://cdn.device-icons.smartthings.com/Lighting/light13-icn@2x.png",
