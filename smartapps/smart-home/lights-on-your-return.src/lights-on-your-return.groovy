@@ -50,18 +50,22 @@ preferences {
 }
 
 def installed() {
-  log.debug "Installed with settings: ${settings}"
+  log.debug("installed() settings: ${settings}")
 
   initialize()
 }
 
+def presence(event) {
+  log.debug("presence(${event}")
+}
+
 def updated() {
-  log.debug "Updated with settings: ${settings}"
+  log.debug("updated() settings: ${settings}")
 
   unsubscribe()
   initialize()
 }
 
-def initialize() {
-  // TODO: subscribe to attributes, devices, locations, etc.
+private def initialize() {
+  subscribe(people, "presence", presence)
 }
