@@ -1,6 +1,6 @@
 /*
  *  Lights On Your Return
- *    SmartThings SmartApp that turns lights on and off after a delay when you get home.
+ *    SmartThings SmartApp that turns lights on when you get home and then off after a delay.
  *
  *  Copyright (c) 2018 Samuel Kadolph
  *
@@ -50,22 +50,22 @@ preferences {
 }
 
 def installed() {
-  log.debug("installed() settings: ${settings}")
+  log.debug("installed() ${settings}")
 
-  initialize()
+  attachHandlers()
 }
 
-def presence(event) {
-  log.debug("presence(${event}")
+def handlePresenceEvent(event) {
+  log.debug("handlePresenceEvent(value:${event.value})")
 }
 
 def updated() {
-  log.debug("updated() settings: ${settings}")
+  log.debug("updated() ${settings}")
 
   unsubscribe()
-  initialize()
+  attachHandlers()
 }
 
-private def initialize() {
-  subscribe(people, "presence", presence)
+private def attachHandlers() {
+  subscribe(people, "presence", handlePresenceEvent)
 }

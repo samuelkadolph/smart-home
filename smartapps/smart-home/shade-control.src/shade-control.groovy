@@ -46,22 +46,15 @@ preferences {
 }
 
 def installed() {
-  log.debug("installed() settings: ${settings}")
+  log.debug("installed() ${settings}")
 
-  initialize()
-}
-
-def updated() {
-  log.debug("updated() settings: ${settings}")
-
-  unsubscribe()
-  initialize()
+  attachHandlers()
 }
 
 def handleButtonEvent(event) {
   def data = new groovy.json.JsonSlurper().parseText(event.data)
 
-  log.debug("handleButtonEvent() event: ${event.value} ${data.buttonNumber}")
+  log.debug("handleButtonEvent(value:${event.value} buttonNumber:${data.buttonNumber})")
 
   if (event.value == "pushed") {
     if (data.buttonNumber == 5) {
@@ -74,6 +67,13 @@ def handleButtonEvent(event) {
   }
 }
 
-private def initialize() {
+def updated() {
+  log.debug("updated() ${settings}")
+
+  unsubscribe()
+  attachHandlers()
+}
+
+private def attachHandlers() {
   subscribe(switches, "button", handleButtonEvent)
 }
