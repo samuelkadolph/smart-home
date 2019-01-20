@@ -30,9 +30,9 @@ definition(
   author: "Samuel Kadolph",
   description: "Todo",
   category: "Safety & Security",
-  iconUrl: "https://s3.amazonaws.com/smartapp-icons/Convenience/App-LightUpMyWorld.png",
-  iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/App-LightUpMyWorld@2x.png",
-  iconX3Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/App-LightUpMyWorld@2x.png"
+  iconUrl: "http://cdn.device-icons.smartthings.com/Lighting/light13-icn.png",
+  iconX2Url: "http://cdn.device-icons.smartthings.com/Lighting/light13-icn@2x.png",
+  iconX3Url: "http://cdn.device-icons.smartthings.com/Lighting/light13-icn@3x.png"
 )
 
 preferences {
