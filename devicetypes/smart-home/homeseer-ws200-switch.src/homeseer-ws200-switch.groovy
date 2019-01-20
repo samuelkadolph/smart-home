@@ -252,12 +252,9 @@ def updated() {
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd) {
-  log.debug("zwaveEvent ${cmd}")
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.centralscenev1.CentralSceneNotification cmd) {
-  log.debug("zwaveEvent ${cmd}")
-
   def tapCount = null
   def paddle = null
   def value = "pushed"
@@ -302,8 +299,6 @@ def zwaveEvent(physicalgraph.zwave.commands.centralscenev1.CentralSceneNotificat
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cmd) {
-  log.debug("zwaveEvent ${cmd}")
-
   def newValue = cmd.value == 0x00 ? "off" : "on"
 
   createEvent(name: "switch", value: newValue, isStateChange: device.value == newValue)

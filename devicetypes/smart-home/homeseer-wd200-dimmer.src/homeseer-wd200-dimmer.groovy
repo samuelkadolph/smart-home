@@ -241,6 +241,7 @@ def parse(String description) {
   def cmd = zwave.parse(description)
 
   if (cmd) {
+    log.debug(cmd)
     return zwaveEvent(cmd)
   } else {
     return null
@@ -260,14 +261,10 @@ def updated() {
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd) {
-  log.debug cmd
-
   handleReport(cmd)
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.centralscenev1.CentralSceneNotification cmd) {
-  log.debug("zwaveEvent ${cmd}")
-
   def tapCount = null
   def paddle = null
   def value = "pushed"
@@ -318,8 +315,6 @@ def zwaveEvent(physicalgraph.zwave.commands.centralscenev1.CentralSceneNotificat
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.switchmultilevelv3.SwitchMultilevelReport cmd) {
-  log.debug cmd
-
   handleReport(cmd)
 }
 
