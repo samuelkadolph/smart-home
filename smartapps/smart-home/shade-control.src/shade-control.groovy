@@ -29,7 +29,7 @@ definition(
   namespace: "smart-home",
   author: "Samuel Kadolph",
   description: "Control window shades with wall switches",
-  category: "",
+  category: "Convenience",
   iconUrl: "http://cdn.device-icons.smartthings.com/Home/home9-icn.png",
   iconX2Url: "http://cdn.device-icons.smartthings.com/Home/home9-icn@2x.png",
   iconX3Url: "http://cdn.device-icons.smartthings.com/Home/home9-icn@3x.png"
