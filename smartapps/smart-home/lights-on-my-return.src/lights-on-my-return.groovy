@@ -45,7 +45,7 @@ preferences {
   }
 
   section("And turn the lights off after") {
-    input "delay", "decimal", title: "Number of minutes", required: false
+    input "delay", "decimal", title: "Number of minutes", required: false, defaultValue: 5
   }
 }
 
@@ -58,27 +58,35 @@ def installed() {
 def handlePresenceEvent(event) {
   log.debug("handlePresenceEvent(value:${event.value})")
 
+  if (event.value != "present") {
+    return
+  }
+
   def lightsToTurnOff = []
 
   lights.each { light ->
     if (light.currentValue("switch") == "off") {
-      log.debug("Turning on '${light}'")
+      log.debug("Turning on '${light.label}'")
 
       light.on()
-      lightsToTurnOff << light
+      lightsToTurnOff << light.id
+    } else {
+      log.debug("'${light.label}' is already on, skipping")
     }
   }
 
   if (lightsToTurnOff.size() > 0) {
-    runIn(delay * 60, turnOffLight, [data: [lights: lightsToTurnOff]])
+    runIn(delay * 60, turnOffLights, [data: [lights: lightsToTurnOff]])
   }
 }
 
 def turnOffLights(data) {
-  data.lights.each { light ->
-    log.debug("Turning off '${light}'")
+  lights.each { light ->
+    if (light.id in data.lights) {
+      log.debug("Turning off '${light.label}'")
 
-    light.off()
+      light.off()
+    }
   }
 }
 
