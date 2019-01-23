@@ -30,9 +30,9 @@ definition(
   author: "Samuel Kadolph",
   description: "Automatically control lights with motion sensors",
   category: "Convenience",
-  iconUrl: "http://cdn.device-icons.smartthings.com/Home/home9-icn.png",
-  iconX2Url: "http://cdn.device-icons.smartthings.com/Home/home9-icn@2x.png",
-  iconX3Url: "http://cdn.device-icons.smartthings.com/Home/home9-icn@3x.png"
+  iconUrl: "http://cdn.device-icons.smartthings.com/Lighting/light9-icn.png",
+  iconX2Url: "http://cdn.device-icons.smartthings.com/Lighting/light9-icn@2x.png",
+  iconX3Url: "http://cdn.device-icons.smartthings.com/Lighting/light9-icn@3x.png"
 )
 
 preferences {
