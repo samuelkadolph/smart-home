@@ -46,7 +46,7 @@ def installed() {
 }
 
 def handlePresenceEvent(event) {
-  log.debug("handlePresenceEvent(value:${event.value})")
+  log.debug("handlePresenceEvent(value:${event.value}, data:${event.data})")
 
   if (event.value != "present") {
     return

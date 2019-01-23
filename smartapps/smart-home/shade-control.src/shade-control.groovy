@@ -54,7 +54,7 @@ def installed() {
 def handleButtonEvent(event) {
   def data = new groovy.json.JsonSlurper().parseText(event.data)
 
-  log.debug("handleButtonEvent(value:${event.value} buttonNumber:${data.buttonNumber})")
+  log.debug("handleButtonEvent(value:${event.value}, data:${event.data})")
 
   if (event.value == "pushed") {
     if (data.buttonNumber == 5) {
