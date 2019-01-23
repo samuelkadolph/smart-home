@@ -87,12 +87,12 @@ def turnOffLights(data) {
 
 def prefPage() {
   dynamicPage(name: "prefPage", install: true, uninstall: true) {
-    section("When one of these people comes home") {
-      input "people", "capability.presenceSensor", title: "Which people?", multiple: true
+    section("Turn these lights on") {
+      input "lights", "capability.switch", title: "Which lights?", multiple: true
     }
 
-    section("Turn the following lights on") {
-      input "lights", "capability.switch", title: "Which lights?", multiple: true
+    section("When one of these people comes home") {
+      input "people", "capability.presenceSensor", title: "Which people?", multiple: true
     }
 
     section("And turn the lights off after") {

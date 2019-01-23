@@ -1,6 +1,6 @@
 /*
- *  Shade Control
- *    SmartThings SmartApp that controls window shades with the buttons on a switch.
+ *  Motion Lighting
+ *    SmartThings SmartApp that turns lights on and off based on a motion sensor.
  *
  *  Copyright (c) 2019 Samuel Kadolph
  *
@@ -25,10 +25,10 @@
  */
 
 definition(
-  name: "Shade Control",
+  name: "Motion Lighting",
   namespace: "smart-home",
   author: "Samuel Kadolph",
-  description: "Control window shades with wall switches",
+  description: "Automatically control lights with motion sensors",
   category: "Convenience",
   iconUrl: "http://cdn.device-icons.smartthings.com/Home/home9-icn.png",
   iconX2Url: "http://cdn.device-icons.smartthings.com/Home/home9-icn@2x.png",
@@ -36,12 +36,12 @@ definition(
 )
 
 preferences {
-  section("Open and close these shades") {
-    input "shades", "capability.windowShade", title: "Which shades?", multiple: true
+  section("Turn on and off these lights") {
+    input "lights", "capability.switch", title: "Which switches?", multiple: true
   }
 
-  section("With these switches") {
-    input "switches", "capability.switch", title: "Which switches?", multiple: true
+  section("When there is motion detected by") {
+    input "sensors", "capability.motionSensor", title: "Which sensors?", multiple: true
   }
 }
 
@@ -51,20 +51,8 @@ def installed() {
   attachHandlers()
 }
 
-def handleButtonEvent(event) {
-  def data = new groovy.json.JsonSlurper().parseText(event.data)
-
-  log.debug("handleButtonEvent(value:${event.value}, data:${event.data})")
-
-  if (event.value == "pushed") {
-    if (data.buttonNumber == 5) {
-      log.info("Opening shades ${shades}")
-      shades.on()
-    } else if (data.buttonNumber == 6) {
-      log.info("Closing shades ${shades}")
-      shades.off()
-    }
-  }
+def handleMotionEvent(event) {
+  log.debug("handleMotionEvent(value:${event.value}, data:${event.data}")
 }
 
 def updated() {
@@ -75,5 +63,5 @@ def updated() {
 }
 
 private def attachHandlers() {
-  subscribe(switches, "button", handleButtonEvent)
+  subscribe(sensors, "motion", handleMotionEvent)
 }
