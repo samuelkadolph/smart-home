@@ -1,4 +1,4 @@
-/**
+/*
  *  Shade Control
  *    SmartThings SmartApp that controls window shades with the buttons on a switch.
  *

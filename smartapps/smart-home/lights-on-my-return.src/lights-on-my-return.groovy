@@ -57,6 +57,29 @@ def installed() {
 
 def handlePresenceEvent(event) {
   log.debug("handlePresenceEvent(value:${event.value})")
+
+  def lightsToTurnOff = []
+
+  lights.each { light ->
+    if (light.currentValue("switch") == "off") {
+      log.debug("Turning on '${light}'")
+
+      light.on()
+      lightsToTurnOff << light
+    }
+  }
+
+  if (lightsToTurnOff.size() > 0) {
+    runIn(delay * 60, turnOffLight, [data: [lights: lightsToTurnOff]])
+  }
+}
+
+def turnOffLights(data) {
+  data.lights.each { light ->
+    log.debug("Turning off '${light}'")
+
+    light.off()
+  }
 }
 
 def updated() {
