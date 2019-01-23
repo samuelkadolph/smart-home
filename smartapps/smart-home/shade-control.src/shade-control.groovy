@@ -36,12 +36,12 @@ definition(
 )
 
 preferences {
-  section("Shades to control") {
-    input "shades", "capability.windowShade", multiple: true
+  section("Control these shades") {
+    input "shades", "capability.windowShade", title: "Which shades?", multiple: true
   }
 
-  section("Using these switches") {
-    input "switches", "capability.switch", multiple: true
+  section("With these switches") {
+    input "switches", "capability.switch", title: "Which switches?", multiple: true
   }
 }
 
