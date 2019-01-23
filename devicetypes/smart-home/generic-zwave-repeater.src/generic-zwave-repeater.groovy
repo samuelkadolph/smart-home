@@ -65,13 +65,13 @@ def parse(String description) {
 def ping() {
   log.debug("ping()")
 
-  _refresh()
+  doRefresh()
 }
 
 def refresh() {
   log.debug("refresh()")
 
-  _refresh()
+  doRefresh()
 }
 
 def updated() {
@@ -79,7 +79,7 @@ def updated() {
 
   sendEvent(name: "checkInterval", value: 480, displayed: false, data: [protocol: "zwave", hubHardwareId: device.hub.hardwareID, offlinePingable: "1"])
 
-  _refresh()
+  doRefresh()
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.versionv1.VersionReport cmd) {
@@ -98,7 +98,7 @@ def zwaveEvent(physicalgraph.zwave.Command cmd) {
   [:]
 }
 
-private def _refresh() {
+private def doRefresh() {
   if (state.tryCount == null) {
     state.tryCount = 0
   }
