@@ -25,7 +25,7 @@
  */
 
 definition(
-  name: "Lights On My Return",
+  name: "Lights on My Return",
   namespace: "smart-home",
   author: "Samuel Kadolph",
   description: "Turn on lights when you get home and off afterwards",
@@ -36,17 +36,7 @@ definition(
 )
 
 preferences {
-  section("When one of these people comes home") {
-    input "people", "capability.presenceSensor", multiple: true
-  }
-
-  section("Turn the following lights on") {
-    input "lights", "capability.switch", multiple: true
-  }
-
-  section("And turn the lights off after") {
-    input "delay", "decimal", title: "Number of minutes", required: false, defaultValue: 5
-  }
+  page(name: "prefPage")
 }
 
 def installed() {
@@ -59,6 +49,11 @@ def handlePresenceEvent(event) {
   log.debug("handlePresenceEvent(value:${event.value})")
 
   if (event.value != "present") {
+    return
+  }
+
+  if (!withinTimeWindow()) {
+    log.debug("Not within time window, skipping")
     return
   }
 
@@ -90,6 +85,39 @@ def turnOffLights(data) {
   }
 }
 
+def prefPage() {
+  dynamicPage(name: "prefPage", install: true, uninstall: true) {
+    section("When one of these people comes home") {
+      input "people", "capability.presenceSensor", title: "Which people?", multiple: true
+    }
+
+    section("Turn the following lights on") {
+      input "lights", "capability.switch", title: "Which lights?", multiple: true
+    }
+
+    section("And turn the lights off after") {
+      input "delay", "decimal", title: "Number of minutes", defaultValue: 5
+    }
+
+    section("Only between") {
+      input "timeWindow", "enum", title: "When?", options: ["sunset":"Sunset and Sunrise", "custom":"Specific Times"], defaultValue: "sunset", submitOnChange: true
+
+      if (timeWindow == "custom") {
+        input "windowStart", "time", title: "From", required: true
+        input "windowEnd", "time", title: "Until", required: true
+      } else {
+        input "sunsetOffset", "number", title: "Minutes before sunset", defaultValue: 0
+        input "sunriseOffset", "number", title: "Minutes after sunrise", defaultValue: 0
+      }
+    }
+
+    section (mobileOnly: true) {
+      label title: "Assign a name", required: false
+      mode title: "Set for specific mode(s)", required: false
+    }
+  }
+}
+
 def updated() {
   log.debug("updated() ${settings}")
 
@@ -99,4 +127,14 @@ def updated() {
 
 private def attachHandlers() {
   subscribe(people, "presence", handlePresenceEvent)
+}
+
+private withinTimeWindow() {
+  if (timeWindow == "sunset") {
+    def sns = getSunriseAndSunset(sunsetOffset: "-$sunsetOffset", sunriseOffset: "$sunriseOffset")
+
+    timeOfDayIsBetween(sns.sunset, sns.sunrise, new Date(), location.timeZone)
+  } else {
+    timeOfDayIsBetween(windowStart, windowEnd, new Date(), location.timeZone)
+  }
 }
