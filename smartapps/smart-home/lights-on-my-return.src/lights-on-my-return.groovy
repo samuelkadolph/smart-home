@@ -61,7 +61,7 @@ def handlePresenceEvent(event) {
 
   lights.each { light ->
     if (light.currentValue("switch") == "off") {
-      log.debug("Turning on '${light.label}'")
+      log.info("Turning on '${light.label}'")
 
       light.on()
       lightsToTurnOff << light.id
@@ -78,7 +78,7 @@ def handlePresenceEvent(event) {
 def turnOffLights(data) {
   lights.each { light ->
     if (light.id in data.lights) {
-      log.debug("Turning off '${light.label}'")
+      log.info("Turning off '${light.label}'")
 
       light.off()
     }

@@ -58,10 +58,10 @@ def handleButtonEvent(event) {
 
   if (event.value == "pushed") {
     if (data.buttonNumber == 5) {
-      log.debug("Opening shades ${shades}")
+      log.info("Opening shades ${shades}")
       shades.on()
     } else if (data.buttonNumber == 6) {
-      log.debug("Closing shades ${shades}")
+      log.info("Closing shades ${shades}")
       shades.off()
     }
   }
