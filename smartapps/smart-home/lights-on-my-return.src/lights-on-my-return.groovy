@@ -129,7 +129,7 @@ private def attachHandlers() {
   subscribe(people, "presence", handlePresenceEvent)
 }
 
-private withinTimeWindow() {
+private def withinTimeWindow() {
   if (timeWindow == "sunset") {
     def sns = getSunriseAndSunset(sunsetOffset: "-$sunsetOffset", sunriseOffset: "$sunriseOffset")
 

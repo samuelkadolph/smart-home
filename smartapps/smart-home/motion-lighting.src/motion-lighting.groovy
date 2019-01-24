@@ -37,7 +37,7 @@ definition(
 
 preferences {
   section("Turn on and off these lights") {
-    input "lights", "capability.switch", title: "Which switches?", multiple: true
+    input "lights", "capability.switch", title: "Which lights?", multiple: true
   }
 
   section("When there is motion detected by") {
@@ -53,6 +53,13 @@ def installed() {
 
 def handleMotionEvent(event) {
   log.debug("handleMotionEvent(value:${event.value}, data:${event.data}")
+
+  if (event.value == "active") {
+  }
+}
+
+def handleSwitchEvent(event) {
+  log.debug("handleSwitchEvent(value:${event.value}, data:${event.data}")
 }
 
 def updated() {
@@ -63,5 +70,6 @@ def updated() {
 }
 
 private def attachHandlers() {
+  subscribe(lights, "switch", handleSwitchEvent)
   subscribe(sensors, "motion", handleMotionEvent)
 }
