@@ -40,7 +40,7 @@
  */
 
 metadata {
-  definition (name: "HomeSeer WS200+ Switch", author: "samuelkadolph") {
+  definition (namespace: "smart-home", name: "HomeSeer WS200+ Switch", author: "samuelkadolph") {
     capability "Actuator"
     capability "Button"
     capability "Configuration"
@@ -127,7 +127,7 @@ metadata {
 def configure() {
   log.debug("configure()")
 
-  _configure()
+  doConfigure()
 }
 
 def holdDown1() {
@@ -248,7 +248,7 @@ def refresh() {
 def updated() {
   log.debug("updated()")
 
-  _configure()
+  doConfigure()
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd) {
@@ -301,24 +301,30 @@ def zwaveEvent(physicalgraph.zwave.commands.centralscenev1.CentralSceneNotificat
 def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cmd) {
   def newValue = cmd.value == 0x00 ? "off" : "on"
 
-  createEvent(name: "switch", value: newValue, isStateChange: device.value == newValue)
+  createEvent(name: "switch", value: newValue, isStateChange: device.currentValue("switch") != newValue)
 }
 
 def zwaveEvent(physicalgraph.zwave.Command cmd) {
   [:]
 }
 
-private sendButtonEvent(Number tapCount, String paddle) {
+private def doConfigure() {
+  sendEvent(name: "checkInterval", value: 960, displayed: false, data: [protocol: "zwave", hubHardwareId: device.hub.hardwareID, offlinePingable: "1"])
+
+  [:]
+}
+
+private def sendButtonEvent(Number tapCount, String paddle) {
   sendButtonEvent(tapCount, paddle, "pushed")
 }
 
-private sendButtonEvent(Number tapCount, String paddle, String value) {
+private def sendButtonEvent(Number tapCount, String paddle, String value) {
   def button = paddle == "up" ? (tapCount * 2) - 1 : tapCount * 2
 
   sendEvent(name: "button", value: value, data: [buttonNumber: button], descriptionText: "$device.displayName button $button was $value", isStateChange: true)
 }
 
-private sendGetCommand() {
+private def sendGetCommand() {
   def cmds = []
 
   cmds << zwave.switchBinaryV1.switchBinaryGet().format()
@@ -326,7 +332,7 @@ private sendGetCommand() {
   response(cmds)
 }
 
-private sendSetCommand(Number value) {
+private def sendSetCommand(Number value) {
   def cmds = []
 
   cmds << zwave.basicV1.basicSet(value: value).format()
@@ -334,10 +340,4 @@ private sendSetCommand(Number value) {
   cmds << zwave.switchBinaryV1.switchBinaryGet().format()
 
   response(cmds)
-}
-
-private _configure() {
-  sendEvent(name: "checkInterval", value: 960, displayed: false, data: [protocol: "zwave", hubHardwareId: device.hub.hardwareID, offlinePingable: "1"])
-
-  [:]
 }
