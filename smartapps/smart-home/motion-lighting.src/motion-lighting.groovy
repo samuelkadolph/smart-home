@@ -25,8 +25,8 @@
  */
 
 definition(
-  name: "Motion Lighting",
   namespace: "smart-home",
+  name: "Motion Lighting",
   author: "Samuel Kadolph",
   description: "Automatically control lights with motion sensors",
   category: "Convenience",
@@ -48,7 +48,7 @@ preferences {
 def installed() {
   log.debug("installed() ${settings}")
 
-  attachHandlers()
+  initialize()
 }
 
 def handleMotionEvent(event) {
@@ -66,10 +66,14 @@ def updated() {
   log.debug("updated() ${settings}")
 
   unsubscribe()
-  attachHandlers()
+  initialize()
 }
 
-private def attachHandlers() {
+private def initialize() {
   subscribe(lights, "switch", handleSwitchEvent)
   subscribe(sensors, "motion", handleMotionEvent)
+
+  if (!state.lights) {
+    state.lights = []
+  }
 }

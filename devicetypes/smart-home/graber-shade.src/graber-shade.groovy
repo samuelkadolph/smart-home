@@ -117,10 +117,11 @@ def refresh() {
   sendRefresh()
 }
 
+def zwaveEvent(physicalgraph.zwave.commands.batteryv1.BatteryReport cmd) {
+}
+
 def zwaveEvent(physicalgraph.zwave.commands.switchmultilevelv3.SwitchMultilevelReport cmd) {
-  def a = cmd.value == 0 ? "off" : "on"
-  log.debug("cmd.value=${a}")
-  sendEvent(name: "switch", value: cmd.value == 0 ? "off" : "on", displayed: true)
+  sendEvent(name: "switch", value: cmd.value == 0 ? "off" : "on")
   sendEvent(name: "level", value: cmd.value, unit: "%")
 }
 
