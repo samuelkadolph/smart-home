@@ -45,9 +45,6 @@ preferences {
   }
 }
 
-final TRIPLE_TAP_UP = 5
-final TRIPLE_TAP_DOWN = 6
-
 def installed() {
   log.debug("installed() ${settings}")
 
@@ -60,10 +57,10 @@ def handleButtonEvent(event) {
   log.debug("handleButtonEvent(value:${event.value}, data:${event.data})")
 
   if (event.value == "pushed") {
-    if (data.buttonNumber == TRIPLE_TAP_UP) {
+    if (data.buttonNumber == 5) {
       log.info("Opening shades ${shades}")
       shades.open()
-    } else if (data.buttonNumber == TRIPLE_TAP_DOWN) {
+    } else if (data.buttonNumber == 6) {
       log.info("Closing shades ${shades}")
       shades.close()
     }
