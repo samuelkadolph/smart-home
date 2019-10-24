@@ -77,12 +77,14 @@ def off() {
 }
 
 def on() {
-  log.debug "on()"
+  log.debug("on()")
 
-  sendSetCommand(0xFF, device.latestValue("level"))
+  sendSetCommand(0xFF)
 }
 
 def open() {
+  log.debug("open()")
+
   sendSetCommand(0xFF)
 }
 
