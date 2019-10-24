@@ -36,7 +36,7 @@ metadata {
     capability "Switch"
     capability "Window Shade"
 
-    fingerprint mfr: "026E", model: "5A31", deviceJoinName: "Graber Shade"
+    fingerprint mfr: "026E", prod: "4353", model: "5A31", deviceJoinName: "Graber Shade"
 
     tiles(scale: 2) {
       multiAttributeTile(name: "switch", type: "lighting", width: 6, height: 4, canChangeIcon: true) {
