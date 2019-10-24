@@ -78,7 +78,7 @@ def prefPage() {
         case "custom":
         input "windowStart", "time", title: "From", required: true
         input "windowEnd", "time", title: "Until", required: true
-        case "sunset"
+        case "sunset":
         input "sunsetOffset", "number", title: "Minutes before sunset", defaultValue: 0
         input "sunriseOffset", "number", title: "Minutes after sunrise", defaultValue: 0
       }
