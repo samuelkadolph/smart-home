@@ -25,8 +25,8 @@
  */
 
 definition(
-  name: "Shade Control",
   namespace: "smart-home",
+  name: "Shade Control",
   author: "Samuel Kadolph",
   description: "Control window shades with wall switches",
   category: "Convenience",
@@ -45,10 +45,13 @@ preferences {
   }
 }
 
+final TRIPLE_TAP_UP = 5
+final TRIPLE_TAP_DOWN = 6
+
 def installed() {
   log.debug("installed() ${settings}")
 
-  attachHandlers()
+  initialize()
 }
 
 def handleButtonEvent(event) {
@@ -57,12 +60,12 @@ def handleButtonEvent(event) {
   log.debug("handleButtonEvent(value:${event.value}, data:${event.data})")
 
   if (event.value == "pushed") {
-    if (data.buttonNumber == 5) {
+    if (data.buttonNumber == TRIPLE_TAP_UP) {
       log.info("Opening shades ${shades}")
-      shades.on()
-    } else if (data.buttonNumber == 6) {
+      shades.open()
+    } else if (data.buttonNumber == TRIPLE_TAP_DOWN) {
       log.info("Closing shades ${shades}")
-      shades.off()
+      shades.close()
     }
   }
 }
@@ -71,9 +74,9 @@ def updated() {
   log.debug("updated() ${settings}")
 
   unsubscribe()
-  attachHandlers()
+  initialize()
 }
 
-private def attachHandlers() {
+private def initialize() {
   subscribe(switches, "button", handleButtonEvent)
 }
