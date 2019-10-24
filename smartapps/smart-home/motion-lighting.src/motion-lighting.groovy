@@ -1,6 +1,5 @@
 /*
  *  Motion Lighting
- *    SmartThings SmartApp that turns lights on and off based on a motion sensor.
  *
  *  Copyright (c) 2019 Samuel Kadolph
  *
@@ -28,7 +27,7 @@ definition(
   namespace: "smart-home",
   name: "Motion Lighting",
   author: "Samuel Kadolph",
-  description: "Automatically control lights with motion sensors",
+  description: "Automatically turn lights on when motion is detected",
   category: "Convenience",
   iconUrl: "http://cdn.device-icons.smartthings.com/Lighting/light9-icn.png",
   iconX2Url: "http://cdn.device-icons.smartthings.com/Lighting/light9-icn@2x.png",
@@ -48,8 +47,19 @@ def installed() {
 def handleMotionEvent(event) {
   log.debug("handleMotionEvent(value:${event.value}, data:${event.data}")
 
-  if (event.value == "active") {
+  if (!checkConditions()) {
+    log.debug("Conditions not met, skipping")
+    return
   }
+
+  if (event.value == "active") {
+    lights.on()
+  } else {
+    lights.off()
+  }
+
+  // if we turned it on and switch turned off, stay off until no motion?
+  // if it's already on, don't turn it on
 }
 
 def handleSwitchEvent(event) {
@@ -71,16 +81,23 @@ def prefPage() {
       input "delay", "decimal", title: "Number of minutes", defaultValue: 5
     }
 
-    section("Only between") {
-      input "timeWindow", "enum", title: "When?", options: ["always":"Always", "sunset":"Sunset and Sunrise", "custom":"Specific Times"], defaultValue: "always", submitOnChange: true
+    section("Only when") {
+      input "conditions", "enum", title: "When?", options: ["always":"Always", "custom":"Specific Times", "illuminance":"It's Dark Enough", "sunset":"Sunset and Sunrise"], defaultValue: "always", submitOnChange: true
 
-      switch(timeWindow) {
+      switch(conditions) {
+        case "always":
+          break
         case "custom":
-        input "windowStart", "time", title: "From", required: true
-        input "windowEnd", "time", title: "Until", required: true
+          input "windowStart", "time", title: "From", required: true
+          input "windowEnd", "time", title: "Until", required: true
+          break
+        case "illuminance":
+          input "illuminanceDevice", "capability.illuminanceMeasurement", title: "When this device", required: true
+          input "illuminanceMax", "number", title: "Reports below this lux value", defaultValue: 5
+          break
         case "sunset":
-        input "sunsetOffset", "number", title: "Minutes before sunset", defaultValue: 0
-        input "sunriseOffset", "number", title: "Minutes after sunrise", defaultValue: 0
+          input "sunsetOffset", "number", title: "Minutes before sunset", defaultValue: 0
+          input "sunriseOffset", "number", title: "Minutes after sunrise", defaultValue: 0
       }
     }
 
@@ -104,5 +121,19 @@ private def initialize() {
 
   if (!state.lights) {
     state.lights = []
+  }
+}
+
+private def checkConditions() {
+  switch(conditions) {
+    case "always":
+      return true
+    case "illuminance":
+      return illuminanceDevice.currentIlluminance < illuminanceMax
+    case "sunset":
+      def sns = getSunriseAndSunset(sunsetOffset: "-$sunsetOffset", sunriseOffset: "$sunriseOffset")
+      return timeOfDayIsBetween(sns.sunset, sns.sunrise, new Date(), location.timeZone)
+    case "custom":
+      return timeOfDayIsBetween(windowStart, windowEnd, new Date(), location.timeZone)
   }
 }

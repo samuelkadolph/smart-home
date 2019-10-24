@@ -1,6 +1,5 @@
 /*
  *  Lights On My Return
- *    SmartThings SmartApp that turns lights on when you get home and then off after a delay.
  *
  *  Copyright (c) 2018 Samuel Kadolph
  *
@@ -28,7 +27,7 @@ definition(
   namespace: "smart-home",
   name: "Lights on My Return",
   author: "Samuel Kadolph",
-  description: "Turn on lights when you get home and off afterwards",
+  description: "Turn lights on when you get home and off afterwards",
   category: "Safety & Security",
   iconUrl: "http://cdn.device-icons.smartthings.com/Lighting/light9-icn.png",
   iconX2Url: "http://cdn.device-icons.smartthings.com/Lighting/light9-icn@2x.png",
@@ -99,15 +98,23 @@ def prefPage() {
       input "delay", "decimal", title: "Number of minutes", defaultValue: 5
     }
 
-    section("Only between") {
-      input "timeWindow", "enum", title: "When?", options: ["sunset":"Sunset and Sunrise", "custom":"Specific Times"], defaultValue: "sunset", submitOnChange: true
+    section("Only when") {
+      input "timeWindow", "enum", title: "When?", options: ["always":"Always", "custom":"Specific Times", "illuminance":"It's Dark Enough", "sunset":"Sunset and Sunrise"], defaultValue: "always", submitOnChange: true
 
-      if (timeWindow == "custom") {
-        input "windowStart", "time", title: "From", required: true
-        input "windowEnd", "time", title: "Until", required: true
-      } else {
-        input "sunsetOffset", "number", title: "Minutes before sunset", defaultValue: 0
-        input "sunriseOffset", "number", title: "Minutes after sunrise", defaultValue: 0
+      switch(timeWindow) {
+        case "always":
+          break
+        case "custom":
+          input "windowStart", "time", title: "From", required: true
+          input "windowEnd", "time", title: "Until", required: true
+          break
+        case "illuminance":
+          input "illuminanceDevice", "capability.illuminanceMeasurement", title: "When this device", required: true
+          input "illuminanceMax", "number", title: "Reports below this lux value", defaultValue: 5
+          break
+        case "sunset":
+          input "sunsetOffset", "number", title: "Minutes before sunset", defaultValue: 0
+          input "sunriseOffset", "number", title: "Minutes after sunrise", defaultValue: 0
       }
     }
 
@@ -130,11 +137,15 @@ private def initialize() {
 }
 
 private def withinTimeWindow() {
-  if (timeWindow == "sunset") {
-    def sns = getSunriseAndSunset(sunsetOffset: "-$sunsetOffset", sunriseOffset: "$sunriseOffset")
-
-    timeOfDayIsBetween(sns.sunset, sns.sunrise, new Date(), location.timeZone)
-  } else {
-    timeOfDayIsBetween(windowStart, windowEnd, new Date(), location.timeZone)
+  switch(timeWindow) {
+    case "always":
+      return true
+    case "illuminance":
+      return illuminanceDevice.currentIlluminance < illuminanceMax
+    case "sunset":
+      def sns = getSunriseAndSunset(sunsetOffset: "-$sunsetOffset", sunriseOffset: "$sunriseOffset")
+      return timeOfDayIsBetween(sns.sunset, sns.sunrise, new Date(), location.timeZone)
+    case "custom":
+      return timeOfDayIsBetween(windowStart, windowEnd, new Date(), location.timeZone)
   }
 }
