@@ -25,8 +25,8 @@
  */
 
 definition(
-  name: "Lights on My Return",
   namespace: "smart-home",
+  name: "Lights on My Return",
   author: "Samuel Kadolph",
   description: "Turn on lights when you get home and off afterwards",
   category: "Safety & Security",
@@ -42,7 +42,7 @@ preferences {
 def installed() {
   log.debug("installed() ${settings}")
 
-  attachHandlers()
+  initialize()
 }
 
 def handlePresenceEvent(event) {
@@ -122,10 +122,10 @@ def updated() {
   log.debug("updated() ${settings}")
 
   unsubscribe()
-  attachHandlers()
+  initialize()
 }
 
-private def attachHandlers() {
+private def initialize() {
   subscribe(people, "presence", handlePresenceEvent)
 }
 

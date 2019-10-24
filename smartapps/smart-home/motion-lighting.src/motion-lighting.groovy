@@ -36,13 +36,7 @@ definition(
 )
 
 preferences {
-  section("Turn on and off these lights") {
-    input "lights", "capability.switch", title: "Which lights?", multiple: true
-  }
-
-  section("When there is motion detected by") {
-    input "sensors", "capability.motionSensor", title: "Which sensors?", multiple: true
-  }
+  page(name: "prefPage")
 }
 
 def installed() {
@@ -60,6 +54,41 @@ def handleMotionEvent(event) {
 
 def handleSwitchEvent(event) {
   log.debug("handleSwitchEvent(value:${event.value}, data:${event.data}")
+}
+
+
+def prefPage() {
+  dynamicPage(name: "prefPage", install: true, uninstall: true) {
+    section("Turn these lights on") {
+      input "lights", "capability.switch", title: "Which lights?", multiple: true
+    }
+
+    section("When there is motion detected by") {
+      input "sensors", "capability.motionSensor", title: "Which sensors?", multiple: true
+    }
+
+    section("And turn the lights off after") {
+      input "delay", "decimal", title: "Number of minutes", defaultValue: 5
+    }
+
+    section("Only between") {
+      input "timeWindow", "enum", title: "When?", options: ["always":"Always", "sunset":"Sunset and Sunrise", "custom":"Specific Times"], defaultValue: "always", submitOnChange: true
+
+      switch(timeWindow) {
+        case "custom":
+        input "windowStart", "time", title: "From", required: true
+        input "windowEnd", "time", title: "Until", required: true
+        case "sunset"
+        input "sunsetOffset", "number", title: "Minutes before sunset", defaultValue: 0
+        input "sunriseOffset", "number", title: "Minutes after sunrise", defaultValue: 0
+      }
+    }
+
+    section (mobileOnly: true) {
+      label title: "Assign a name", required: false
+      mode title: "Set for specific mode(s)", required: false
+    }
+  }
 }
 
 def updated() {
