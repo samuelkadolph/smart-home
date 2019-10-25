@@ -1,8 +1,5 @@
 /*
  *  HomeSeer HS-WS200+
- *    SmartThings Device Handler for the HomeSeer WS200+ wall switch with RGB indictator.
- *
- *    Website: https://shop.homeseer.com/products/hsws200
  *
  *  Buttons
  *    Number  Description
@@ -63,7 +60,7 @@ metadata {
     command "tapUp4"
     command "tapUp5"
 
-    fingerprint mfr: "000C", model: "3035", deviceJoinName: "HomeSeer HS-WS200+ Switch"
+    fingerprint mfr: "000C", prod: "4447", model: "3035", deviceJoinName: "HomeSeer HS-WS200+ Switch"
 
     tiles(scale: 2) {
       multiAttributeTile(name: "switch", type: "lighting", width: 6, height: 4, canChangeIcon: true) {

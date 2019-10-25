@@ -1,8 +1,5 @@
 /*
  *  HomeSeer HS-WD200+
- *    SmartThings Device Handler for the HomeSeer WS200+ wall dimmer with RGB indictators.
- *
- *    Website: https://shop.homeseer.com/products/hswd200
  *
  *  Buttons
  *    Number  Description
@@ -64,7 +61,7 @@ metadata {
     command "tapUp4"
     command "tapUp5"
 
-    fingerprint mfr: "000C", model: "3036", deviceJoinName: "HomeSeer WD200+ Dimmer"
+    fingerprint mfr: "000C", prod: "4447", model: "3036", deviceJoinName: "HomeSeer WD200+ Dimmer"
 
     tiles(scale: 2) {
       multiAttributeTile(name: "switch", type: "lighting", width: 6, height: 4, canChangeIcon: true) {

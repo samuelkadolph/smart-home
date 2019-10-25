@@ -24,10 +24,8 @@
  */
 
 metadata {
-  definition (namespace: "smart-home", name: "Graber Shade Remote", author: "samuelkadolph") {
-    capability "Actuator"
+  definition (namespace: "smart-home", name: "Graber Shade Remote", author: "samuelkadolph", hidden: true) {
     capability "Battery"
-    capability "Button"
 
     fingerprint mfr: "026E", prod: "5643", model: "5A31", deviceJoinName: "Graber Shade Remote"
 
