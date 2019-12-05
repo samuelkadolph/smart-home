@@ -1,7 +1,7 @@
 /*
- *  Hourglass
+ * Hourglass
  *
- *  MIT License
+ * MIT License
  *
  * Copyright (c) 2019 Samuel Kadolph
  *
@@ -28,7 +28,7 @@ definition(
   namespace: "smart-home",
   name: "Hourglass",
   author: "Samuel Kadolph",
-  description: "Turn things on and off at specific times",
+  description: "Turn things on and off at when you want",
   category: "Safety & Security",
   iconUrl: "http://cdn.device-icons.smartthings.com/Appliances/appliances17-icn.png",
   iconX2Url: "http://cdn.device-icons.smartthings.com/Appliances/appliances17-icn@2x.png",
@@ -45,6 +45,13 @@ def installed() {
   initialize()
 }
 
+def positionChangeHandler() {
+  log.debug("positionChangeHandler()")
+
+  unsubscribe()
+  initialize()
+}
+
 def prefPage() {
   dynamicPage(name: "prefPage", install: true, uninstall: true) {
     section("Turn these devices") {
@@ -58,7 +65,36 @@ def prefPage() {
     section("And off when") {
       triggerPrefs("off")
     }
+
+    section {
+      label title: "Assign a name", required: false
+      mode title: "Set for specific mode(s)", required: false
+    }
   }
+}
+
+def sunriseTimeHandler(event) {
+  log.debug("sunriseTimeHandler(${event})")
+
+  handleSunrise(event.value)
+}
+
+def sunsetTimeHandler(event) {
+  log.debug("sunsetTimeHandler(${event})")
+
+  handleSunset(event.value)
+}
+
+def turnOff() {
+  log.debug("Turning off ${devices}")
+
+  devices.off()
+}
+
+def turnOn() {
+  log.debug("Turning on ${devices}")
+
+  devices.on()
 }
 
 def updated() {
@@ -68,20 +104,69 @@ def updated() {
   initialize()
 }
 
-private def triggerPrefs(String name) {
-  input "${name}Trigger", "enum", title: "When?", options: ["custom":"Specific Time", "illuminance":"It's Dark Enough", "sunrise": "Sunrise", "sunset":"Sunset"], defaultValue: "custom", submitOnChange: true
+private def handleSunrise(String sunrise) {
+  def sunriseTime = Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", sunrise)
 
-  switch("${name}Trigger") {
-    case "custom":
-      input "${name}Time", "time", title: "When", required: true
-      break
-    case "sunrise":
-      input "${name}SunriseOffset", "number", title: "Minutes before sunrise", defaultValue: 0
-    case "sunset":
-      input "${name}SunsetOffset", "number", title: "Minutes before sunset", defaultValue: 0
+  if (onTrigger == "sunrise") {
+    runOnce(new Date(sunriseTime.time + (onSunriseOffset * 60 * 1000)), turnOn)
+  }
+
+  if (offTrigger == "sunrise") {
+    runOnce(new Date(sunriseTime.time + (offSunriseOffset * 60 * 1000)), turnOff)
+  }
+}
+
+private def handleSunset(String sunset) {
+  def sunsetTime = Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", sunset)
+
+  if (onTrigger == "sunset") {
+    runOnce(new Date(sunsetTime.time + (onSunsetOffset * 60 * 1000)), turnOn)
+  }
+
+  if (offTrigger == "sunset") {
+    runOnce(new Date(sunsetTime.time + (offSunsetOffset * 60 * 1000)), turnOff)
   }
 }
 
 private def initialize() {
-  subscribe(people, "presence", handlePresenceEvent)
+  unschedule(turnOn)
+  unschedule(turnOff)
+
+  if (onTrigger == "sunrise" || offTrigger == "sunrise") {
+    subscribe(location, "sunriseTime", sunriseTimeHandler)
+
+    handleSunrise(location.currentValue("sunriseTime"))
+  }
+
+  if (onTrigger == "sunset" || offTrigger == "sunset") {
+    subscribe(location, "sunsetTime", sunsetTimeHandler)
+
+    handleSunset(location.currentValue("sunsetTime"))
+  }
+
+  if (onTrigger == "custom") {
+    schedule(onTime, turnOn)
+  }
+
+  if (offTrigger == "custom") {
+    schedule(offTime, turnOff)
+  }
+
+  subscribe(location, "position", positionChangeHandler)
+}
+
+private def triggerPrefs(String name) {
+  input "${name}Trigger", "enum", title: "When?", options: ["custom":"Specific Time", "sunrise": "Sunrise", "sunset":"Sunset"], defaultValue: "custom", submitOnChange: true
+
+  switch(settings["${name}Trigger"]) {
+    case "custom":
+      input "${name}Time", "time", title: "When", required: true
+      break
+    case "sunrise":
+      input "${name}SunriseOffset", "number", title: "Minutes after sunrise", defaultValue: 0
+      break
+    case "sunset":
+      input "${name}SunsetOffset", "number", title: "Minutes after sunset", defaultValue: 0
+      break
+  }
 }
