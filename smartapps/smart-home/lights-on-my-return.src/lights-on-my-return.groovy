@@ -44,22 +44,22 @@ def installed() {
   initialize()
 }
 
-def handlePresenceEvent(event) {
+private def handlePresenceEvent(event) {
   log.debug("handlePresenceEvent(value:${event.value}, data:${event.data})")
 
   if (event.value != "present") {
     return
   }
 
-  if (!withinTimeWindow()) {
-    log.debug("Not within time window, skipping")
+  if (!checkConditions()) {
+    log.debug("Conditions not met, skipping")
     return
   }
 
   def lightsToTurnOff = []
 
   lights.each { light ->
-    if (light.currentValue("switch") == "off") {
+    if (light.currentSwitch == "off") {
       log.info("Turning on '${light.label}'")
 
       light.on()
@@ -99,9 +99,9 @@ def prefPage() {
     }
 
     section("Only when") {
-      input "timeWindow", "enum", title: "When?", options: ["always":"Always", "custom":"Specific Times", "illuminance":"It's Dark Enough", "sunset":"Sunset and Sunrise"], defaultValue: "always", submitOnChange: true
+      input "conditions", "enum", title: "When?", options: ["always":"Always", "custom":"Between Specific Times", "illuminance":"It's Dark Enough", "sunset":"Between Sunset and Sunrise"], defaultValue: "always", submitOnChange: true
 
-      switch(timeWindow) {
+      switch(conditions) {
         case "always":
           break
         case "custom":
@@ -132,12 +132,8 @@ def updated() {
   initialize()
 }
 
-private def initialize() {
-  subscribe(people, "presence", handlePresenceEvent)
-}
-
-private def withinTimeWindow() {
-  switch(timeWindow) {
+private def checkConditions() {
+  switch(conditions) {
     case "always":
       return true
     case "illuminance":
@@ -148,4 +144,8 @@ private def withinTimeWindow() {
     case "custom":
       return timeOfDayIsBetween(windowStart, windowEnd, new Date(), location.timeZone)
   }
+}
+
+private def initialize() {
+  subscribe(people, "presence", handlePresenceEvent)
 }
