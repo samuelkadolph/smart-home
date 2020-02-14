@@ -44,7 +44,7 @@ def installed() {
   initialize()
 }
 
-private def handlePresenceEvent(event) {
+def handlePresenceEvent(event) {
   log.debug("handlePresenceEvent(value:${event.value}, data:${event.data})")
 
   if (event.value != "present") {
@@ -59,13 +59,13 @@ private def handlePresenceEvent(event) {
   def lightsToTurnOff = []
 
   lights.each { light ->
-    if (light.currentSwitch == "off") {
+    if (light.currentSwitch == "on") {
+      log.debug("'${light.label}' is already on, skipping")
+    } else {
       log.info("Turning on '${light.label}'")
 
       light.on()
       lightsToTurnOff << light.id
-    } else {
-      log.debug("'${light.label}' is already on, skipping")
     }
   }
 
