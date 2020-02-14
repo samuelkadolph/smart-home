@@ -56,31 +56,36 @@ def handlePresenceEvent(event) {
     return
   }
 
-  def lightsToTurnOff = []
-
-  lights.each { light ->
-    if (light.currentSwitch == "on") {
-      log.debug("'${light.label}' is already on, skipping")
+  lights.eachWithIndex { light, i ->
+    if (state.lightsToTurnOff.contains(i)) {
+      log.debug("'${light.label}' is already on, will restart timer")
+    } else if (light.currentSwitch == "on") {
+      log.info("'${light.label}' is already on, skipping")
     } else {
       log.info("Turning on '${light.label}'")
 
       light.on()
-      lightsToTurnOff << light.id
+
+      state.lightsToTurnOff << i
     }
   }
 
-  if (lightsToTurnOff.size() > 0) {
-    runIn(delay * 60, turnOffLights, [data: [lights: lightsToTurnOff]])
+  if (state.lightsToTurnOff.size() > 0) {
+    runIn(delay * 60, turnOffLights)
   }
 }
 
-def turnOffLights(data) {
-  lights.each { light ->
-    if (light.id in data.lights) {
-      log.info("Turning off '${light.label}'")
+def turnOffLights() {
+  def indexes = state.lightsToTurnOff
 
-      light.off()
-    }
+  state.lightsToTurnOff = []
+
+  indexes.each { i ->
+    def light = lights[i]
+
+    log.info("Turning off '${light.label}'")
+
+    light.off()
   }
 }
 
@@ -128,6 +133,7 @@ def prefPage() {
 def updated() {
   log.debug("updated() ${settings}")
 
+  unschedule(turnOffLights)
   unsubscribe()
   initialize()
 }
@@ -147,5 +153,7 @@ private def checkConditions() {
 }
 
 private def initialize() {
+  state.lightsToTurnOff = []
+
   subscribe(people, "presence", handlePresenceEvent)
 }
