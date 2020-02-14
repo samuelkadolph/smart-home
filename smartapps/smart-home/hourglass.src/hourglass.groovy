@@ -30,9 +30,9 @@ definition(
   author: "Samuel Kadolph",
   description: "Turn things on and off at when you want",
   category: "Safety & Security",
-  iconUrl: "http://cdn.device-icons.smartthings.com/Appliances/appliances17-icn.png",
-  iconX2Url: "http://cdn.device-icons.smartthings.com/Appliances/appliances17-icn@2x.png",
-  iconX3Url: "http://cdn.device-icons.smartthings.com/Appliances/appliances17-icn@3x.png"
+  iconUrl: "https://raw.githubusercontent.com/samuelkadolph/smart-home/master/icons/hourglass.png",
+  iconX2Url: "https://raw.githubusercontent.com/samuelkadolph/smart-home/master/icons/hourglass@2x.png",
+  iconX3Url: "https://raw.githubusercontent.com/samuelkadolph/smart-home/master/icons/hourglass@3x.png"
 )
 
 preferences {
@@ -54,17 +54,43 @@ def positionChangeHandler() {
 
 def prefPage() {
   dynamicPage(name: "prefPage", install: true, uninstall: true) {
-    section("Turn these devices") {
-      input "devices", "capability.switch", title: "Which devices?", multiple: true
+    section("What do you want to happen?") {
+      input "onSwitches", "capability.switch", title: "Turn on these lights or switches", multiple: true, required: false
+      input "offSwitches", "capability.switch", title: "Turn off these lights or switches", multiple: true, required: false
+      input "dimmerLevel", "enum", title: "Set dimmers to this level", options: [10: "10%", 20: "20%", 30: "30%", 40: "40%", 50: "50%", 60: "60%", 70: "70%", 80: "80%", 90: "90%", 100: "100%"], required: false
     }
 
-    section("On when") {
+    // section("When do you want them to turn on?") {
       triggerPrefs("on")
-    }
+    // }
 
-    section("And off when") {
+    // section("When do you want them to turn off?") {
       triggerPrefs("off")
-    }
+    // }
+
+    // section("Turn these switches") {
+    //   input "switches", "capability.switch", title: "Which switches?", multiple: true
+    // }
+
+    // section("On when") {
+    //   triggerPrefs("on")
+    // }
+
+    // section("And turn these switches") {
+    //   input "offSwitches", "enum", title: "Which switches?", options: ["same": "Same as above", "others": "Other switches"], defaultValue: "same", submitOnChange: true
+
+    //   switch(offSwitches) {
+    //     case "others":
+    //       input "offSwitchesList", "capability.switch", title: "Which switches?", multiple: true
+    //       break
+    //     default:
+    //       break
+    //   }
+    // }
+
+    // section("Off when") {
+    //   triggerPrefs("off")
+    // }
 
     section {
       label title: "Assign a name", required: false
@@ -86,15 +112,21 @@ def sunsetTimeHandler(event) {
 }
 
 def turnOff() {
-  log.debug("Turning off ${devices}")
+  log.debug("Turning off ${offSwitches}")
 
-  devices.off()
+  offSwitches.off()
 }
 
 def turnOn() {
-  log.debug("Turning on ${devices}")
+  log.debug("Turning on ${onSwitches}")
 
-  devices.on()
+  onSwitches.each { sw ->
+    if (dimmerLevel != null && sw.hasCapability("Switch Level")) {
+      sw.setLevel(dimmerLevel.toInteger())
+    } else {
+      sw.on()
+    }
+  }
 }
 
 def updated() {
@@ -156,17 +188,18 @@ private def initialize() {
 }
 
 private def triggerPrefs(String name) {
-  input "${name}Trigger", "enum", title: "When?", options: ["custom":"Specific Time", "sunrise": "Sunrise", "sunset":"Sunset"], defaultValue: "custom", submitOnChange: true
+  section("When do you want them to turn ${name}?") {
+    input "${name}Trigger", "enum", title: "At", options: ["custom":"A Specific Time", "sunrise": "Sunrise", "sunset":"Sunset"], defaultValue: "custom", submitOnChange: true
 
-  switch(settings["${name}Trigger"]) {
-    case "custom":
-      input "${name}Time", "time", title: "When", required: true
-      break
-    case "sunrise":
-      input "${name}SunriseOffset", "number", title: "Minutes after sunrise", defaultValue: 0
-      break
-    case "sunset":
-      input "${name}SunsetOffset", "number", title: "Minutes after sunset", defaultValue: 0
-      break
+    switch(settings["${name}Trigger"]) {
+      case "sunrise":
+        input "${name}SunriseOffset", "number", title: "Minutes after sunrise", defaultValue: 0
+        break
+      case "sunset":
+        input "${name}SunsetOffset", "number", title: "Minutes after sunset", defaultValue: 0
+        break
+      default:
+        input "${name}Time", "time", title: "When", required: true
+    }
   }
 }
