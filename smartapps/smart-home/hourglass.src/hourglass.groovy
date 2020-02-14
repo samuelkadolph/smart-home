@@ -48,6 +48,8 @@ def installed() {
 def positionChangeHandler() {
   log.debug("positionChangeHandler()")
 
+  unschedule(turnOff)
+  unschedule(turnOn)
   unsubscribe()
   initialize()
 }
@@ -111,26 +113,22 @@ def updated() {
 }
 
 private def handleSunrise(String sunrise) {
-  def sunriseTime = Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", sunrise)
-
-  if (onTrigger == "sunrise") {
-    runOnce(new Date(sunriseTime.time + (onSunriseOffset * 60 * 1000)), turnOn)
-  }
-
-  if (offTrigger == "sunrise") {
-    runOnce(new Date(sunriseTime.time + (offSunriseOffset * 60 * 1000)), turnOff)
-  }
+  handleSuntime(sunrise, "sunrise", onSunriseOffset, offSunriseOffset)
 }
 
 private def handleSunset(String sunset) {
-  def sunsetTime = Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", sunset)
+  handleSuntime(sunset, "sunset", onSunsetOffset, offSunsetOffset)
+}
 
-  if (onTrigger == "sunset") {
-    runOnce(new Date(sunsetTime.time + (onSunsetOffset * 60 * 1000)), turnOn)
+private def handleSuntime(String time, String trigger, Number onOffset, Number offOffset) {
+  def suntime = Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", time)
+
+  if (onTrigger == trigger) {
+    runOnce(new Date(suntime.time + (onOffset * 60 * 1000)), turnOn)
   }
 
-  if (offTrigger == "sunset") {
-    runOnce(new Date(sunsetTime.time + (offSunsetOffset * 60 * 1000)), turnOff)
+  if (offTrigger == trigger) {
+    runOnce(new Date(suntime.time + (offOffset * 60 * 1000)), turnOff)
   }
 }
 
@@ -160,9 +158,11 @@ private def initialize() {
 
 private def triggerPrefs(String name) {
   section("When do you want them to turn ${name}?") {
-    input "${name}Trigger", "enum", title: "At", options: ["custom":"A Specific Time", "sunrise": "Sunrise", "sunset":"Sunset"], defaultValue: "custom", submitOnChange: true
+    input "${name}Trigger", "enum", title: "At", options: ["custom": "A Specific Time", "never": "Never", "sunrise": "Sunrise", "sunset":"Sunset"], defaultValue: "custom", submitOnChange: true
 
     switch(settings["${name}Trigger"]) {
+      case "never":
+        break
       case "sunrise":
         input "${name}SunriseOffset", "number", title: "Minutes after sunrise", defaultValue: 0
         break
