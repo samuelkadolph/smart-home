@@ -60,37 +60,9 @@ def prefPage() {
       input "dimmerLevel", "enum", title: "Set dimmers to this level", options: [10: "10%", 20: "20%", 30: "30%", 40: "40%", 50: "50%", 60: "60%", 70: "70%", 80: "80%", 90: "90%", 100: "100%"], required: false
     }
 
-    // section("When do you want them to turn on?") {
-      triggerPrefs("on")
-    // }
+    triggerPrefs("on")
 
-    // section("When do you want them to turn off?") {
-      triggerPrefs("off")
-    // }
-
-    // section("Turn these switches") {
-    //   input "switches", "capability.switch", title: "Which switches?", multiple: true
-    // }
-
-    // section("On when") {
-    //   triggerPrefs("on")
-    // }
-
-    // section("And turn these switches") {
-    //   input "offSwitches", "enum", title: "Which switches?", options: ["same": "Same as above", "others": "Other switches"], defaultValue: "same", submitOnChange: true
-
-    //   switch(offSwitches) {
-    //     case "others":
-    //       input "offSwitchesList", "capability.switch", title: "Which switches?", multiple: true
-    //       break
-    //     default:
-    //       break
-    //   }
-    // }
-
-    // section("Off when") {
-    //   triggerPrefs("off")
-    // }
+    triggerPrefs("off")
 
     section {
       label title: "Assign a name", required: false
@@ -112,13 +84,13 @@ def sunsetTimeHandler(event) {
 }
 
 def turnOff() {
-  log.debug("Turning off ${offSwitches}")
+  log.info("Turning off ${offSwitches}")
 
   offSwitches.off()
 }
 
 def turnOn() {
-  log.debug("Turning on ${onSwitches}")
+  log.info("Turning on ${onSwitches}")
 
   onSwitches.each { sw ->
     if (dimmerLevel != null && sw.hasCapability("Switch Level")) {
@@ -132,6 +104,8 @@ def turnOn() {
 def updated() {
   log.debug("updated() ${settings}")
 
+  unschedule(turnOff)
+  unschedule(turnOn)
   unsubscribe()
   initialize()
 }
@@ -161,9 +135,6 @@ private def handleSunset(String sunset) {
 }
 
 private def initialize() {
-  unschedule(turnOn)
-  unschedule(turnOff)
-
   if (onTrigger == "sunrise" || offTrigger == "sunrise") {
     subscribe(location, "sunriseTime", sunriseTimeHandler)
 
