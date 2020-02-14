@@ -52,13 +52,13 @@ def handlePresenceEvent(event) {
   }
 
   if (!checkConditions()) {
-    log.debug("Conditions not met, skipping")
+    log.info("Conditions not met, skipping")
     return
   }
 
   lights.eachWithIndex { light, i ->
     if (state.lightsToTurnOff.contains(i)) {
-      log.debug("'${light.label}' is already on, will restart timer")
+      log.info("'${light.label}' is already on, will restart timer")
     } else if (light.currentSwitch == "on") {
       log.info("'${light.label}' is already on, skipping")
     } else {
