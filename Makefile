@@ -1,22 +1,23 @@
-CONVERTBIN ?= convert
+CONVERT ?= convert
 
-ICONS := $(basename $(wildcard icons/*.svg))
+ICONS := $(basename $(notdir $(wildcard icons/src/*.svg)))
+
 
 default: all
 
 define BUILD_ICON_RULE
-$(i).png: $(i).svg
-	convert -density 1200 -resize 49x49 $(i).svg $(i).png
+icons/$(i).png: icons/src/$(i).svg
+	$(CONVERT) -density 1200 -resize 49x49 icons/src/$(i).svg icons/$(i).png
 
-$(i)@2x.png: $(i).svg
-	convert -density 1200 -resize 98x98 $(i).svg $(i)@2x.png
+icons/$(i)@2x.png: icons/src/$(i).svg
+	$(CONVERT) -density 1200 -resize 98x98 icons/src/$(i).svg icons/$(i)@2x.png
 
-$(i)@3x.png: $(i).svg
-	convert -density 1200 -resize 150x150 $(i).svg $(i)@3x.png
+icons/$(i)@3x.png: icons/src/$(i).svg
+	$(CONVERT) -density 1200 -resize 150x150 icons/src/$(i).svg icons/$(i)@3x.png
+
+all: icons/$(i).png icons/$(i)@2x.png icons/$(i)@3x.png
 endef
 $(foreach i, $(ICONS), $(eval $(BUILD_ICON_RULE)))
-
-all: $(addsuffix .png, $(ICONS)) $(addsuffix @2x.png, $(ICONS)) $(addsuffix @3x.png, $(ICONS))
 
 clean:
 	rm -f icons/*.png
