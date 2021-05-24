@@ -30,9 +30,9 @@ definition(
   author: "Samuel Kadolph",
   description: "Turn things on and off at when you want",
   category: "Safety & Security",
-  iconUrl: "https://raw.githubusercontent.com/samuelkadolph/smart-home/master/icons/hourglass.png",
-  iconX2Url: "https://raw.githubusercontent.com/samuelkadolph/smart-home/master/icons/hourglass@2x.png",
-  iconX3Url: "https://raw.githubusercontent.com/samuelkadolph/smart-home/master/icons/hourglass@3x.png"
+  iconUrl: "https://raw.githubusercontent.com/samuelkadolph/smart-home/main/icons/hourglass.png",
+  iconX2Url: "https://raw.githubusercontent.com/samuelkadolph/smart-home/main/icons/hourglass@2x.png",
+  iconX3Url: "https://raw.githubusercontent.com/samuelkadolph/smart-home/main/icons/hourglass@3x.png"
 )
 
 preferences {
