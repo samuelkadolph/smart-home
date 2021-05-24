@@ -12,8 +12,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -45,8 +45,8 @@ def installed() {
   initialize()
 }
 
-def positionChangeHandler() {
-  log.debug("positionChangeHandler()")
+def positionChangeHandler(event) {
+  log.debug("positionChangeHandler(${event})")
 
   unschedule(turnOff)
   unschedule(turnOn)
@@ -76,13 +76,13 @@ def prefPage() {
 def sunriseTimeHandler(event) {
   log.debug("sunriseTimeHandler(${event})")
 
-  handleSunrise(event.value)
+  handleSunrise(event.value, true)
 }
 
 def sunsetTimeHandler(event) {
   log.debug("sunsetTimeHandler(${event})")
 
-  handleSunset(event.value)
+  handleSunset(event.value, true)
 }
 
 def turnOff() {
@@ -112,37 +112,43 @@ def updated() {
   initialize()
 }
 
-private def handleSunrise(String sunrise) {
-  handleSuntime(sunrise, "sunrise", onSunriseOffset, offSunriseOffset)
+private def handleSunrise(String sunrise, boolean triggeredByEvent) {
+  handleSuntime(sunrise, "sunrise", onSunriseOffset, offSunriseOffset, triggeredByEvent)
 }
 
-private def handleSunset(String sunset) {
-  handleSuntime(sunset, "sunset", onSunsetOffset, offSunsetOffset)
+private def handleSunset(String sunset, boolean triggeredByEvent) {
+  handleSuntime(sunset, "sunset", onSunsetOffset, offSunsetOffset, triggeredByEvent)
 }
 
-private def handleSuntime(String time, String trigger, Number onOffset, Number offOffset) {
+private def handleSuntime(String time, String trigger, Number onOffset, Number offOffset, boolean triggeredByEvent) {
   def suntime = Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", time)
 
   if (onTrigger == trigger) {
-    runOnce(new Date(suntime.time + (onOffset * 60 * 1000)), turnOn)
+    if (triggeredByEvent && onOffset > 0) {
+      runIn(onOffset * 60, turnOn)
+    } else {
+      runOnce(new Date(suntime.time + (onOffset * 60 * 1000)), turnOn)
+    }
   }
 
   if (offTrigger == trigger) {
-    runOnce(new Date(suntime.time + (offOffset * 60 * 1000)), turnOff)
+    if (triggeredByEvent && offOffset > 0) {
+      runIn(offOffset * 60, turnOff)
+    } else {
+      runOnce(new Date(suntime.time + (offOffset * 60 * 1000)), turnOff)
+    }
   }
 }
 
 private def initialize() {
   if (onTrigger == "sunrise" || offTrigger == "sunrise") {
     subscribe(location, "sunriseTime", sunriseTimeHandler)
-
-    handleSunrise(location.currentValue("sunriseTime"))
+    handleSunrise(location.currentValue("sunriseTime"), false)
   }
 
   if (onTrigger == "sunset" || offTrigger == "sunset") {
     subscribe(location, "sunsetTime", sunsetTimeHandler)
-
-    handleSunset(location.currentValue("sunsetTime"))
+    handleSunset(location.currentValue("sunsetTime"), false)
   }
 
   if (onTrigger == "custom") {
@@ -164,10 +170,10 @@ private def triggerPrefs(String name) {
       case "never":
         break
       case "sunrise":
-        input "${name}SunriseOffset", "number", title: "Minutes after sunrise", defaultValue: 0
+        input "${name}SunriseOffset", "number", title: "Minutes after sunrise", range: "*..*", defaultValue: 0
         break
       case "sunset":
-        input "${name}SunsetOffset", "number", title: "Minutes after sunset", defaultValue: 0
+        input "${name}SunsetOffset", "number", title: "Minutes after sunset", range: "*..*", defaultValue: 0
         break
       default:
         input "${name}Time", "time", title: "When", required: true
